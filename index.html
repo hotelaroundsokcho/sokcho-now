@@ -1,353 +1,726 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#17263B">
-<title>출근확인 · 호텔어라운드 속초</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>호텔어라운드 속초 · 로컬지도</title>
+<meta name="robots" content="noindex, nofollow"><!-- 검수 완료 후 이 줄을 삭제하면 검색 노출이 허용됩니다 -->
+<meta name="description" content="Hotel Around Sokcho local map · 속초·양양·고성 로컬지도 / Sokcho, Yangyang, Goseong">
+<meta name="theme-color" content="#24404F">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hotel Around Sokcho · Local Map">
+<meta property="og:description" content="속초·양양·고성, 지금 이 시간에 어울리는 곳 / Places that suit this time of day">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%99%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;600&family=Gowun+Dodum&family=Noto+Sans+SC:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;600&family=Gowun+Dodum&display=swap"></noscript>
 <style>
-:root{
-  --ink:#17263B;        /* 새벽의 동해 남색 */
-  --bg:#F2F5F8;
-  --card:#FFFFFF;
-  --line:#DDE4EC;
-  --blue:#1D5FBF;       /* 주 동작 */
-  --green:#188A5D;      /* 출근 완료 / 먹음 */
-  --red:#C24141;        /* 경고 / 안먹음 */
-  --muted:#6B7A8F;
-  --radius:16px;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{
-  font-family:'Noto Sans KR',system-ui,sans-serif;
-  background:var(--bg);color:var(--ink);
-  font-size:17px;line-height:1.5;
-}
-#app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+  :root{
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    --display:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    --body:"Gowun Dodum","IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    --glow:#E3A24B;
+    --glow-ink:#1B2D36;
+  }
+  :root[lang^="zh"]{--display:"Noto Sans SC","PingFang SC","Microsoft YaHei","IBM Plex Sans KR",sans-serif;--body:"Noto Sans SC","PingFang SC","Microsoft YaHei","IBM Plex Sans KR",sans-serif}
+  :root[lang="ja"]{--display:"Noto Sans JP","Hiragino Sans","Yu Gothic","IBM Plex Sans KR",sans-serif;--body:"Noto Sans JP","Hiragino Sans","Yu Gothic","IBM Plex Sans KR",sans-serif}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  *,*::before,*::after{box-sizing:inherit}
 
-/* ---------- 공통 ---------- */
-header.top{
-  padding:20px 20px 12px;display:flex;align-items:baseline;justify-content:space-between;
-}
-header.top .brand{font-weight:900;font-size:15px;letter-spacing:.14em;color:var(--muted)}
-header.top .who{font-weight:700;font-size:15px;color:var(--blue)}
-main{flex:1;padding:8px 20px 40px}
-h1.page{font-size:26px;font-weight:900;margin:8px 0 4px}
-p.sub{color:var(--muted);font-size:15px;margin-bottom:20px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:16px}
-.btn{
-  display:block;width:100%;border:none;border-radius:14px;cursor:pointer;
-  font-family:inherit;font-size:18px;font-weight:700;padding:16px;
-  background:var(--blue);color:#fff;transition:opacity .15s;
-}
-.btn:active{opacity:.8}
-.btn.ghost{background:transparent;color:var(--muted);font-weight:500;font-size:15px;padding:10px}
-.btn.danger{background:var(--red)}
-.btn.green{background:var(--green)}
-.btn.small{width:auto;display:inline-block;padding:8px 14px;font-size:14px;border-radius:10px}
-.btn:disabled{opacity:.45;cursor:default}
-input[type=text],input[type=password],input[type=date]{
-  width:100%;border:1.5px solid var(--line);border-radius:12px;background:#fff;
-  font-family:inherit;font-size:18px;padding:14px;color:var(--ink);
-}
-input:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:var(--blue)}
-label.fld{display:block;font-size:14px;font-weight:700;color:var(--muted);margin:14px 0 6px}
-.screen{display:none}
-.screen.on{display:block;animation:fade .18s ease}
-@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.screen.on{animation:none}}
+  /* 시간대 토큰: 새벽 / 낮 / 일몰 / 밤 */
+  :root[data-time="dawn"]{--bg:#D9DEE8;--ink:#1B2D36;--muted:#48595F;--sea:#C5CFDF;--line:#AEB9C8;--panel:#CBD2DF}
+  :root[data-time="day"]{--bg:#DDE4E7;--ink:#1B2D36;--muted:#4A5B62;--sea:#C3CFD4;--line:#B0BEC4;--panel:#D0D9DD}
+  :root[data-time="dusk"]{--bg:#D8CFD6;--ink:#1B2D36;--muted:#4C5A60;--sea:#C6B8C4;--line:#B8AAB5;--panel:#CDC2CB}
+  :root[data-time="night"]{--bg:#24404F;--ink:#E6EDF0;--muted:#AFC0C7;--sea:#1B3341;--line:#43606F;--panel:#2C4A5A}
 
-/* ---------- 이름 선택 ---------- */
-.name-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.name-grid button{
-  border:1.5px solid var(--line);background:#fff;border-radius:14px;
-  font-family:inherit;font-size:19px;font-weight:700;padding:22px 8px;cursor:pointer;color:var(--ink);
-}
-.name-grid button:active{background:var(--bg)}
+  body{
+    margin:0;min-height:100%;
+    background:var(--bg);color:var(--ink);
+    font-family:var(--body);font-size:16px;line-height:1.6;overflow-wrap:break-word;
+    transition:background-color .5s ease,color .5s ease;
+  }
+  :root[lang="ko"] body{word-break:keep-all}
+  :root[lang="ja"] body,:root[lang^="zh"] body{line-break:strict}
+  .wrap{max-width:480px;margin:0 auto;padding:22px 20px 40px}
+  .toprow{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+  .brand{font-size:14px;color:var(--muted);margin:0}
+  .langs{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+  .langs button{
+    font:inherit;font-family:var(--display);font-size:14px;font-weight:400;
+    color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;
+    padding:4px 13px;cursor:pointer;min-height:40px;
+    transition:background-color .3s ease,color .3s ease;
+  }
+  .langs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
+  .koname{margin:0;font-size:14px;color:var(--muted)}
+  h1{
+    font-family:var(--display);font-weight:300;
+    font-size:clamp(30px,9vw,44px);line-height:1.22;letter-spacing:-.02em;
+    margin:0 0 10px;
+  }
+  .lede{margin:0 0 22px;color:var(--muted);max-width:30em}
 
-/* ---------- PIN ---------- */
-.pin-box{display:flex;gap:10px;justify-content:center;margin:18px 0}
-.pin-box input{
-  width:58px;height:68px;text-align:center;font-size:30px;font-weight:900;
-  border:1.5px solid var(--line);border-radius:14px;
-}
-.notice{font-size:14px;color:var(--muted);text-align:center}
-.notice.err{color:var(--red);font-weight:700}
+  .times{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:0 0 10px;border:1px solid var(--line);border-radius:999px;padding:3px}
+  .times button{
+    font:inherit;font-family:var(--display);font-weight:400;font-size:15px;
+    color:var(--muted);background:transparent;border:0;border-radius:999px;
+    padding:10px 0 8px;cursor:pointer;position:relative;min-height:48px;
+    transition:background-color .3s ease,color .3s ease;
+  }
+  .times button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:600}
+  .times button .now{display:block;font-size:11px;line-height:1;margin-top:3px;height:11px;font-weight:400;opacity:.85}
+  .note{min-height:3.2em;margin:0 0 6px;font-size:15px}
 
-/* ---------- 메이드 메인: 시그니처 출근 버튼 ---------- */
-.lunch-toggle{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--line);border-radius:16px;overflow:hidden;margin:14px 0 22px}
-.lunch-toggle button{
-  border:none;background:#fff;font-family:inherit;font-size:19px;font-weight:700;
-  padding:20px 6px;cursor:pointer;color:var(--muted);
-}
-.lunch-toggle button.on-y{background:var(--green);color:#fff}
-.lunch-toggle button.on-n{background:var(--red);color:#fff}
-.checkin-wrap{display:flex;justify-content:center;margin:26px 0}
-.checkin-btn{
-  width:190px;height:190px;border-radius:50%;border:none;cursor:pointer;
-  background:var(--blue);color:#fff;font-family:inherit;
-  font-size:30px;font-weight:900;letter-spacing:.06em;
-  box-shadow:0 10px 24px rgba(29,95,191,.35);
-  transition:transform .12s;
-}
-.checkin-btn:active{transform:scale(.96)}
-.done-card{text-align:center;padding:30px 20px}
-.done-card .time{font-size:44px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--green);margin:6px 0}
-.done-card .lbl{font-size:14px;font-weight:700;color:var(--muted);letter-spacing:.1em}
-.stamp{font-size:12px;color:var(--muted);margin-top:8px;font-variant-numeric:tabular-nums}
+  .map{margin:0 -4px 6px}
+  .map svg{display:block;width:100%;height:auto}
+  .sea{fill:var(--sea);transition:fill .5s ease}
+  .ring{fill:none;stroke:var(--line);stroke-width:1;stroke-dasharray:2 5}
+  .maplabel{font-family:var(--body);font-size:12px;fill:var(--muted)}
+  .ringlabel{paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+  .hotel-dot{fill:var(--ink)}
+  .hotel-halo{fill:var(--glow);opacity:.35}
+  .pin{cursor:pointer}
+  .pin .disc{fill:var(--bg);stroke:var(--muted);stroke-width:1.2;transition:fill .4s ease,stroke .4s ease}
+  .pin .num{font-family:var(--display);font-weight:600;font-size:12px;fill:var(--muted);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+  .pin .halo{fill:var(--glow);opacity:0}
+  .pin.on .disc{fill:var(--glow);stroke:var(--glow)}
+  .pin.on .num{fill:var(--glow-ink)}
+  .pin.on .halo{opacity:.28;animation:breathe 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  .pin.sel .disc{stroke:var(--ink);stroke-width:2.4}
+  .pin:focus-visible .disc{stroke:var(--ink);stroke-width:3}
+  .pin:focus{outline:none}
+  @keyframes breathe{0%,100%{transform:scale(1);opacity:.28}50%{transform:scale(1.5);opacity:.08}}
 
-/* ---------- 관리자 ---------- */
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:18px}
-.tabs button{
-  border:none;background:transparent;font-family:inherit;font-size:15px;font-weight:700;
-  padding:10px 2px;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;
-}
-.tabs button.on{color:var(--ink);border-bottom-color:var(--blue)}
-.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
-.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center}
-.stat b{display:block;font-size:24px;font-weight:900;font-variant-numeric:tabular-nums}
-.stat span{font-size:12px;color:var(--muted);font-weight:700}
-table.list{width:100%;border-collapse:collapse;font-size:14px}
-table.list th{font-size:12px;color:var(--muted);text-align:left;font-weight:700;padding:8px 6px;border-bottom:1.5px solid var(--line)}
-table.list td{padding:10px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;vertical-align:middle}
-.pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px}
-.pill.y{background:#E3F4EC;color:var(--green)}
-.pill.n{background:#F9E7E7;color:var(--red)}
-.pill.gray{background:#EDF1F5;color:var(--muted)}
-.row-actions{display:flex;gap:6px;flex-wrap:wrap}
-.inline-add{display:flex;gap:8px;margin-bottom:14px}
-.inline-add input{flex:1}
-.inline-add .btn{width:auto;padding:12px 18px;font-size:15px}
-.range{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .tabs{display:flex;gap:22px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+  .tabs button{
+    font:inherit;font-family:var(--display);font-size:17px;font-weight:400;
+    background:none;border:0;color:var(--muted);padding:8px 0 10px;cursor:pointer;
+    border-bottom:2px solid transparent;margin-bottom:-1px;
+  }
+  .tabs button[aria-selected="true"]{color:var(--ink);font-weight:600;border-bottom-color:var(--glow)}
 
-/* ---------- 로딩 오버레이 ---------- */
-#overlay{
-  position:fixed;inset:0;background:rgba(23,38,59,.55);display:none;
-  align-items:center;justify-content:center;z-index:99;
-}
-#overlay.on{display:flex}
-#overlay .box{background:#fff;border-radius:18px;padding:26px 30px;text-align:center;max-width:280px}
-.spin{
-  width:36px;height:36px;border-radius:50%;margin:0 auto 12px;
-  border:4px solid var(--line);border-top-color:var(--blue);
-  animation:sp 0.8s linear infinite;
-}
-@keyframes sp{to{transform:rotate(360deg)}}
-#overlay .msg{font-size:15px;font-weight:700}
-#overlay .hint{font-size:13px;color:var(--muted);margin-top:6px;display:none}
-#overlay.slow .hint{display:block}
+  .areas{display:flex;gap:8px;margin-bottom:6px;margin:0 0 4px;flex-wrap:wrap}
+  .areas button{
+    font:inherit;font-family:var(--display);font-size:14px;color:var(--muted);
+    background:transparent;border:1px solid var(--line);border-radius:999px;padding:4px 16px;cursor:pointer;min-height:40px;
+    transition:background-color .3s ease,color .3s ease;
+  }
+  .areas button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
-/* ---------- 토스트 ---------- */
-#toast{
-  position:fixed;left:50%;bottom:30px;transform:translateX(-50%);
-  background:var(--ink);color:#fff;font-size:15px;font-weight:700;
-  padding:12px 20px;border-radius:12px;opacity:0;pointer-events:none;
-  transition:opacity .2s;z-index:100;max-width:88%;text-align:center;
-}
-#toast.on{opacity:1}
+  ol.list{list-style:none;margin:0;padding:0}
+  .item{
+    display:grid;grid-template-columns:28px 1fr;column-gap:10px;
+    padding:16px 0 16px 12px;border-left:3px solid transparent;
+    border-bottom:1px solid var(--line);
+    transition:border-color .4s ease,opacity .4s ease,background-color .3s ease;
+  }
+  .item.dim{opacity:.9}
+  .item.on{border-left-color:var(--glow)}
+  .item.sel{background:var(--panel)}
+  .idx{font-family:var(--display);font-weight:300;font-size:24px;line-height:1.1;color:var(--muted)}
+  .dist{font-family:var(--display);font-size:14px;font-weight:600;color:var(--muted);margin:0 0 2px}
+  .name{
+    font-family:var(--display);font-weight:600;font-size:19px;line-height:1.3;margin:0;
+    background:none;border:0;padding:0;color:var(--ink);text-align:left;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;
+  }
+  .name:focus-visible,.links a:focus-visible,.times button:focus-visible,.tabs button:focus-visible,.areas button:focus-visible,.langs button:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}
+  .why{margin:4px 0 0}
+  .hours{margin:2px 0 0;font-size:15px;color:var(--muted)}
+  .links{margin:4px 0 0;display:flex;gap:6px;font-size:15px;flex-wrap:wrap}
+  .links a{color:var(--ink);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px;padding:0 8px 0 0}
+  .check{margin:8px 0 0;font-size:12.5px;color:var(--glow-ink);background:var(--glow);display:inline-block;padding:2px 8px;border-radius:4px}
+  .reviewbar{display:none;background:var(--glow);color:var(--glow-ink);font-size:13px;padding:6px 10px;border-radius:6px;margin:0 0 16px}
+  .review .reviewbar{display:block}
 
-footer{padding:12px 20px 28px;text-align:center}
-footer button{border:none;background:none;font-family:inherit;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline}
+  .foot{margin:26px 0 0;font-size:14px;color:var(--muted)}
+  .foot p{margin:0 0 6px}
+
+  @media (min-width:720px){
+    .wrap{max-width:640px;padding-top:36px}
+    body{font-size:17px}
+    h1{font-size:48px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
 </style>
 </head>
 <body>
-<div id="app">
-  <header class="top">
-    <span class="brand">HOTEL AROUND SOKCHO</span>
-    <span class="who" id="whoami"></span>
-  </header>
-
-  <main>
-    <!-- 메이드: 이름 선택 -->
-    <section class="screen" id="scr-name">
-      <h1 class="page">안녕하세요!</h1>
-      <p class="sub">본인 이름을 눌러주세요.</p>
-      <div class="name-grid" id="name-grid"></div>
-      <p class="notice" id="name-empty" style="display:none;margin-top:20px">
-        등록된 명단이 없습니다. 관리자에게 이름 등록을 요청해 주세요.
-      </p>
-    </section>
-
-    <!-- 메이드: PIN 등록/입력 -->
-    <section class="screen" id="scr-pin">
-      <h1 class="page" id="pin-title"></h1>
-      <p class="sub" id="pin-sub"></p>
-      <div class="card">
-        <div class="pin-box" id="pin-box1">
-          <input type="password" inputmode="numeric" maxlength="1" autocomplete="off">
-          <input type="password" inputmode="numeric" maxlength="1" autocomplete="off">
-          <input type="password" inputmode="numeric" maxlength="1" autocomplete="off">
-          <input type="password" inputmode="numeric" maxlength="1" autocomplete="off">
-        </div>
-        <div id="pin-confirm-wrap" style="display:none">
-          <p class="notice">확인을 위해 한 번 더 입력해 주세요.</p>
-          <div class="pin-box" id="pin-box2">
-            <input type="password" inputmode="numeric" maxlength="1" autocomplete="off">
-            <input type="password" inputmode="numeric" maxlength="1" autocomplete="off">
-            <input type="password" inputmode="numeric" maxlength="1" autocomplete="off">
-            <input type="password" inputmode="numeric" maxlength="1" autocomplete="off">
-          </div>
-        </div>
-        <p class="notice err" id="pin-err"></p>
-        <button class="btn" id="pin-submit" style="margin-top:14px">확인</button>
-      </div>
-      <button class="btn ghost" id="pin-reset-link">비밀번호(PIN)를 잊으셨나요?</button>
-      <button class="btn ghost" id="pin-back">← 이름 다시 선택</button>
-    </section>
-
-    <!-- 메이드: 메인 -->
-    <section class="screen" id="scr-main">
-      <h1 class="page"><span id="main-name"></span>님</h1>
-      <p class="sub" id="main-date"></p>
-
-      <!-- 출근 전 -->
-      <div id="before-checkin" style="display:none">
-        <div class="card">
-          <b style="font-size:16px">오늘 점심을 드시나요?</b>
-          <div class="lunch-toggle" id="lunch-pre">
-            <button data-v="Y">먹어요</button>
-            <button data-v="N">안 먹어요</button>
-          </div>
-          <div class="checkin-wrap">
-            <button class="checkin-btn" id="btn-checkin">출근</button>
-          </div>
-          <p class="notice">점심을 먼저 선택한 뒤 출근 버튼을 눌러주세요.</p>
-        </div>
-      </div>
-
-      <!-- 출근 후 -->
-      <div id="after-checkin" style="display:none">
-        <div class="card done-card">
-          <div class="lbl">출근 완료</div>
-          <div class="time" id="done-time"></div>
-          <div class="stamp">오늘도 좋은 하루 되세요 🌊</div>
-        </div>
-        <div class="card">
-          <b style="font-size:16px">오늘 점심</b>
-          <div class="lunch-toggle" id="lunch-post">
-            <button data-v="Y">먹어요</button>
-            <button data-v="N">안 먹어요</button>
-          </div>
-          <p class="notice">점심은 오늘 안에 언제든 바꿀 수 있어요.</p>
-          <p class="stamp" id="lunch-updated" style="text-align:center"></p>
-        </div>
-      </div>
-
-      <button class="btn ghost" id="main-logout">다른 이름으로 접속</button>
-    </section>
-
-    <!-- 관리자: 로그인 -->
-    <section class="screen" id="scr-admin-login">
-      <h1 class="page">관리자 로그인</h1>
-      <p class="sub">관리자 계정으로 로그인해 주세요.</p>
-      <div class="card">
-        <label class="fld">아이디</label>
-        <input type="text" id="adm-id" autocomplete="username">
-        <label class="fld">비밀번호</label>
-        <input type="password" id="adm-pw" autocomplete="current-password">
-        <button class="btn" id="adm-login-btn" style="margin-top:18px">로그인</button>
-      </div>
-      <button class="btn ghost" id="adm-back">← 출근 화면으로</button>
-    </section>
-
-    <!-- 관리자: 메인 -->
-    <section class="screen" id="scr-admin">
-      <h1 class="page">관리자</h1>
-      <div class="tabs">
-        <button data-tab="dash" class="on">현황</button>
-        <button data-tab="maids">메이드</button>
-        <button data-tab="admins">관리자</button>
-        <button data-tab="export">정산</button>
-      </div>
-
-      <!-- 현황 -->
-      <div id="tab-dash">
-        <div class="stat-row">
-          <div class="stat"><b id="st-total">-</b><span>전체</span></div>
-          <div class="stat"><b id="st-in">-</b><span>출근</span></div>
-          <div class="stat"><b id="st-y" style="color:var(--green)">-</b><span>점심 먹음</span></div>
-          <div class="stat"><b id="st-n" style="color:var(--red)">-</b><span>안 먹음</span></div>
-        </div>
-        <div class="card">
-          <b>출근한 메이드</b>
-          <table class="list" id="tbl-in"><thead><tr><th>이름</th><th>출근</th><th>점심</th><th>점심변경</th></tr></thead><tbody></tbody></table>
-        </div>
-        <div class="card">
-          <b>미출근</b>
-          <table class="list" id="tbl-out"><thead><tr><th>이름</th></tr></thead><tbody></tbody></table>
-        </div>
-        <button class="btn" id="dash-refresh">새로고침</button>
-      </div>
-
-      <!-- 메이드 관리 -->
-      <div id="tab-maids" style="display:none">
-        <div class="inline-add">
-          <input type="text" id="new-maid-name" placeholder="새 메이드 이름">
-          <button class="btn" id="btn-add-maid">추가</button>
-        </div>
-        <div class="card">
-          <table class="list" id="tbl-maids"><thead><tr><th>이름</th><th>PIN</th><th>관리</th></tr></thead><tbody></tbody></table>
-        </div>
-      </div>
-
-      <!-- 관리자 관리 -->
-      <div id="tab-admins" style="display:none">
-        <div class="inline-add">
-          <input type="text" id="new-adm-id" placeholder="아이디" style="flex:0.8">
-          <input type="password" id="new-adm-pw" placeholder="비밀번호">
-          <button class="btn" id="btn-add-admin">추가</button>
-        </div>
-        <div class="card">
-          <table class="list" id="tbl-admins"><thead><tr><th>아이디</th><th>역할</th><th>관리</th></tr></thead><tbody></tbody></table>
-        </div>
-        <div class="card">
-          <b>내 비밀번호 변경</b>
-          <label class="fld">현재 비밀번호</label>
-          <input type="password" id="pw-old" autocomplete="current-password">
-          <label class="fld">새 비밀번호</label>
-          <input type="password" id="pw-new" autocomplete="new-password">
-          <button class="btn" id="btn-pw-change" style="margin-top:14px">변경</button>
-        </div>
-      </div>
-
-      <!-- 정산 -->
-      <div id="tab-export" style="display:none">
-        <div class="card">
-          <b>기간별 출근기록 다운로드</b>
-          <div class="range" style="margin-top:12px">
-            <div><label class="fld" style="margin-top:0">시작일</label><input type="date" id="exp-start"></div>
-            <div><label class="fld" style="margin-top:0">종료일</label><input type="date" id="exp-end"></div>
-          </div>
-          <button class="btn green" id="btn-export">엑셀 다운로드</button>
-          <p class="notice" style="margin-top:10px">삭제된 메이드의 기록도 이름 그대로 포함됩니다.</p>
-        </div>
-      </div>
-
-      <button class="btn ghost" id="adm-logout">로그아웃</button>
-    </section>
-  </main>
-
-  <footer>
-    <button id="goto-admin">관리자 화면</button>
-  </footer>
-</div>
-
-<!-- 로딩 오버레이 -->
-<div id="overlay">
-  <div class="box">
-    <div class="spin"></div>
-    <div class="msg">처리 중...</div>
-    <div class="hint">서버를 깨우는 중이에요.<br>첫 접속은 조금 오래 걸릴 수 있어요.</div>
+<main class="wrap" id="app">
+  <div class="toprow">
+    <p class="brand">Hotel Around Sokcho</p>
+    <div class="langs" id="langs" role="group" aria-label="Language · 언어 · 言語 · 语言"></div>
   </div>
-</div>
+  <h1 data-i18n="h1"></h1>
+  <p class="lede" data-i18n="lede"></p>
+  <div class="reviewbar">검수 모드 · 주황색 라벨은 게시 전 확인이 필요한 항목입니다.</div>
 
-<div id="toast"></div>
+  <div class="times" role="group" id="times"></div>
+  <p class="note" id="note" aria-live="polite"></p>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="app.js"></script>
+  <figure class="map" id="mapfig">
+    <svg viewBox="0 0 340 420" role="img" aria-labelledby="mapTitle">
+      <title id="mapTitle" data-i18n="mapTitle"></title>
+      <path class="sea" d="M216,0 C208,70 222,120 214,180 C208,230 220,290 213,340 C209,380 218,400 214,420 L340,420 L340,0 Z"/>
+      <text class="maplabel" x="288" y="214" text-anchor="middle" data-i18n="sea"></text>
+      <text class="maplabel" x="170" y="14" text-anchor="middle" data-i18n="north"></text>
+      <text class="maplabel" x="170" y="414" text-anchor="middle" data-i18n="south"></text>
+      <circle class="ring" cx="170" cy="210" r="42"/>
+      <circle class="ring" cx="170" cy="210" r="84"/>
+      <circle class="ring" cx="170" cy="210" r="126"/>
+      <circle class="ring" cx="170" cy="210" r="165"/>
+      <text class="maplabel ringlabel" x="146" y="246" text-anchor="middle" data-i18n="r1"></text>
+      <text class="maplabel ringlabel" x="112" y="274" text-anchor="middle" data-i18n="r2"></text>
+      <text class="maplabel ringlabel" x="80" y="302" text-anchor="middle" data-i18n="r3"></text>
+      <text class="maplabel ringlabel" x="52" y="330" text-anchor="middle" data-i18n="r4"></text>
+      <circle class="hotel-halo" cx="170" cy="210" r="13"/>
+      <circle class="hotel-dot" cx="170" cy="210" r="5"/>
+      <text class="maplabel ringlabel" x="170" y="194" text-anchor="middle" data-i18n="hotel"></text>
+      <g id="pins"></g>
+    </svg>
+    <figcaption class="maplabel" style="font-size:14px;margin-top:2px" data-i18n="cap"></figcaption>
+  </figure>
+
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="areas" role="group" id="areas"></div>
+  <ol class="list" id="list" role="tabpanel"></ol>
+
+  <div class="foot">
+    <p data-i18n="foot1"></p>
+    <p data-i18n="foot2"></p>
+    <p data-i18n="foot3"></p>
+    <p data-i18n="foot4"></p>
+  </div>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ------------------------------------------------------------------
+     장소 데이터 (게시 전 검수 대상)
+     area: 속초/양양/고성
+     ring: 1 도보 10분 / 2 차 10분 안팎 / 3 차 20분 안팎 / 4 차 30분 안팎 (추정)
+     a: 개념도 방위각(°, 동=0, 북=90, 남=-90)
+     tags: 어울리는 시간대(에디토리얼 판단, 실시간 영업 여부 아님)
+     hours: 근거가 있는 경우만 표기 / check: 게시 전 확인 필요 항목(검수 모드 전용)
+     q: 지도 검색어(한국어 상호가 검색 정확도가 높아 영문판에서도 그대로 사용)
+     ------------------------------------------------------------------ */
+  var PLACES = {
+    spot:[
+      {id:"s1",area:"속초",name:"속초해수욕장",q:"속초해수욕장",ring:1,dist:"도보 2분",a:0,tags:["dawn","day","dusk","night"],why:"체크인 후 첫 산책. 밤에는 파도 소리만 남아요.",check:[]},
+      {id:"s2",area:"속초",name:"속초아이",q:"속초아이 대관람차",ring:1,a:42,tags:["dusk","night"],why:"해수욕장 앞에서 천천히 도는 대관람차.",check:["운영시간","거리"]},
+      {id:"s3",area:"속초",name:"청초호 호수공원",q:"청초호 호수공원",ring:2,dist:"차로 5분",a:115,tags:["dusk","night"],why:"바다 대신 호수를 따라 걷는 저녁 산책.",check:[]},
+      {id:"s4",area:"속초",name:"영금정",q:"속초 영금정",ring:2,a:72,tags:["dawn","day"],why:"일출 명소로 알려진 바위 정자. 해 뜨기 전에 도착하면 좋아요.",check:["거리"]},
+      {id:"s5",area:"속초",name:"아바이마을·갯배",q:"속초 갯배",ring:2,a:92,tags:["day"],why:"50m 물길을 손으로 당겨 건너는 배. 함경도 실향민이 정착한 골목으로 이어져요.",check:["거리","요금·운항시간"]},
+      {id:"s6",area:"속초",name:"속초중앙시장",q:"속초중앙시장",ring:2,a:140,tags:["day","dusk"],why:"시장 골목을 돌며 간식으로 저녁을 시작하는 코스.",check:["거리"]},
+      {id:"s7",area:"속초",name:"외옹치 바다향기로",q:"외옹치 바다향기로",ring:2,a:-70,tags:["day","dusk"],why:"바다 바로 옆을 따라 걷는 산책길.",check:["운영시간","거리"]},
+      {id:"s8",area:"양양",name:"낙산사",q:"양양 낙산사",ring:3,a:-85,tags:["dawn","day"],why:"바다를 내려다보는 천년 사찰. 의상대와 홍련암에서 맞는 일출로 알려져 있어요.",check:["거리","입장료·개방시간"]},
+      {id:"s9",area:"고성",name:"청간정",q:"고성 청간정",ring:3,a:84,tags:["dawn","day"],why:"바다를 마주한 관동팔경의 정자. 일출을 보러 오는 사람이 많아요.",check:["거리"]},
+      {id:"s10",area:"고성",name:"아야진해수욕장",q:"아야진해수욕장",ring:3,a:98,tags:["day","dusk"],why:"설악산을 뒤에 두고 동해를 마주하는 해변. 옆으로 서낭바위 산책로가 이어져요.",check:["거리"]},
+      {id:"s11",area:"양양",name:"죽도해변·인구해변",q:"양양 죽도해변",ring:4,a:-95,tags:["day","dusk"],why:"서퍼들이 모이는 해변. 죽도 바로 옆 인구해변은 조금 더 여유로워요.",check:["거리(30분 초과 가능)"]}
+    ],
+    food:[
+      {id:"f1",area:"속초",name:"속초항아리물회",q:"속초항아리물회",ring:1,a:-25,tags:["day","dusk"],why:"해수욕장 앞 물회 전문점. 오픈 직후가 덜 붐벼요.",hours:"09:00–20:50 (토 21:20)",check:["영업시간","거리"]},
+      {id:"f2",area:"속초",name:"우동당",q:"속초 우동당",ring:1,a:18,tags:["day","dusk"],why:"직접 반죽한 면에 속초 해산물을 얹은 붓가케 우동. 대기를 감안하세요.",hours:"10:00–20:30",check:["거리"]},
+      {id:"f3",area:"속초",name:"춘선네",q:"속초 춘선네 곰치국",ring:2,a:160,tags:["day"],why:"물곰탕과 곰치국으로 알려진 집. 오전에 대기가 길다는 후기가 많아요.",check:["주소","영업시간","거리"]},
+      {id:"f4",area:"속초",name:"맥코리아",q:"속초 맥코리아 돈까스",ring:2,a:195,tags:["day"],why:"1994년부터 이어온 속초 노포 왕돈까스.",check:["주소","영업시간","거리"]},
+      {id:"f5",area:"양양",name:"물치식당",q:"양양 물치식당",ring:2,a:-80,tags:["day","dusk"],why:"속초와 양양 경계의 물치항 로컬 식당. 물회와 가자미조림이 대표예요.",check:["영업시간(자료마다 상이)","거리"]},
+      {id:"f6",area:"속초",name:"동명동 감자옹심이",q:"동명동 감자옹심이 속초",ring:3,a:135,tags:["day"],why:"생감자로 빚은 옹심이와 감자전. 점심에만 열어요.",hours:"월–토 10:00–15:00 · 일요일 휴무",check:["거리"]},
+      {id:"f7",area:"속초",name:"봉포머구리집",q:"속초 봉포머구리집",ring:3,a:78,tags:["day"],why:"성게알밥과 전복물회로 알려진 집. 바로 앞이 바다예요.",check:["영업시간","거리"]},
+      {id:"f8",area:"고성",name:"아야진 또올래",q:"고성 아야진 또올래",ring:3,a:95,tags:["dawn","day"],why:"장치조림과 곰치국을 내는 아야진 현지 식당. 아침 7시부터 열어요.",hours:"월–토 07:00–19:00 · 일 07:00–14:30",check:["거리"]},
+      {id:"f9",area:"양양",name:"낙산해변식당",q:"양양 낙산해변식당",ring:3,a:-95,tags:["dawn","day","dusk"],why:"낙산해변 앞 한식 집밥. 이른 아침부터 밤까지 열어요.",hours:"07:30–22:00",check:["영업시간","거리"]},
+      {id:"f10",area:"고성",name:"백촌막국수",q:"고성 백촌막국수",ring:4,a:100,tags:["day"],why:"동치미 국물 막국수와 편육 두 가지만 내는 집. 대기가 1~2시간까지 길어져요.",hours:"10:30–17:00 · 수요일 휴무",check:["영업시간","거리","대기 방식"]},
+      {id:"f11",area:"속초",name:"동명항 포장마차 거리",q:"동명항 포장마차 거리 속초",ring:2,a:80,tags:["dusk","night"],why:"바다를 바로 앞에 두고 해산물 안주에 한잔하는 포장마차 거리. 저녁부터 밤까지 여는 곳이 많고, 가게마다 시간이 달라요.",check:["영업시간(가게별 상이)","거리"]}
+    ],
+    cafe:[
+      {id:"c1",area:"속초",name:"어느멋진날 카페",q:"어느멋진날 속초",ring:1,a:30,tags:["day","dusk"],why:"창밖으로 대관람차가 보이는 3층 카페.",check:["영업시간","거리"]},
+      {id:"c2",area:"속초",name:"옥란푸딩",q:"속초 옥란푸딩",ring:1,a:-10,tags:["day"],why:"감자·두부·밤 푸딩과 타르트. 가볍게 들르기 좋아요.",check:["주소","영업시간"]},
+      {id:"c3",area:"속초",name:"셜터 SHLTR",q:"속초 셜터 SHLTR",ring:2,a:58,tags:["day","dusk"],why:"블랙 인테리어에 통창 바다 뷰. 3층이 가장 인기예요.",hours:"09:30–20:00",check:["영업시간","거리"]},
+      {id:"c4",area:"속초",name:"커피해요",q:"속초 커피해요",ring:2,a:78,tags:["day"],why:"등대해변 바로 앞. 크림브륄레 비스코티가 대표 메뉴.",hours:"11:00–18:00 · 수요일 휴무",check:["영업시간","거리"]},
+      {id:"c5",area:"고성",name:"소울브릿지",q:"고성 소울브릿지",ring:2,a:98,tags:["day","dusk"],why:"바다와 설악산이 함께 보이는 4층 대형 브런치 카페.",check:["주소","영업시간"]},
+      {id:"c6",area:"속초",name:"칠성조선소",q:"속초 칠성조선소",ring:2,a:118,tags:["day","dusk"],why:"선박 레일과 청초호 전망을 살린 카페.",check:["주소","영업시간","거리"]},
+      {id:"c7",area:"고성",name:"태시트",q:"고성 태시트 청간정길",ring:3,a:82,tags:["day"],why:"하얀 외관에 통창 너머로 동해가 펼쳐지는 카페. 태시트 라떼가 대표예요.",check:["영업시간","거리"]},
+      {id:"c8",area:"고성",name:"노메드",q:"고성 노메드 카페 청간정길",ring:3,a:95,tags:["day","dusk"],why:"청간해변이 바로 보이는 라탄 인테리어 카페. 주말보다 평일이 한적해요.",check:["영업시간(자료마다 상이)","거리"]},
+      {id:"c9",area:"고성",name:"아야트커피",q:"고성 아야트커피",ring:3,a:107,tags:["day","dusk"],why:"아야진해변이 내려다보이는 2층 루프탑 카페.",hours:"10:00–19:00 (라스트오더 18:30)",check:["영업시간","거리"]},
+      {id:"c10",area:"양양",name:"마할로 죽도",q:"양양 마할로 죽도",ring:4,a:-92,tags:["day"],why:"2층 카페에 루프탑이 있는 죽도해변 카페.",hours:"10:00–19:00",check:["영업시간","거리(30분 초과 가능)"]}
+    ]
+  };
+
+  /* 영문 표기 (게시 전 검수 대상). 없는 항목은 한국어 원문으로 대체됨 */
+  var EN = {
+    s1:{name:"Sokcho Beach",dist:"2 min walk",why:"Your first walk after check-in. At night, only the sound of the waves remains."},
+    s2:{name:"Sokcho Eye (Ferris wheel)",why:"A Ferris wheel turning slowly in front of the beach."},
+    s3:{name:"Cheongchoho Lake Park",dist:"5 min by car",why:"An evening walk along the lake instead of the sea."},
+    s4:{name:"Yeonggeumjeong Pavilion",why:"A pavilion on the rocks known for sunrise. Arrive before dawn."},
+    s5:{name:"Abai Village & Gaetbae Ferry",why:"A hand-pulled boat across a 50 m channel, leading into the alleys where refugees from Hamgyong settled."},
+    s6:{name:"Sokcho Central Market",why:"Wander the market alleys and start your evening with street snacks."},
+    s7:{name:"Oeongchi Coastal Trail",why:"A walking path right beside the sea."},
+    s8:{name:"Naksansa Temple",why:"A thousand-year-old temple overlooking the sea, known for sunrise at Uisangdae and Hongnyeonam."},
+    s9:{name:"Cheonggancheong Pavilion",why:"A seaside pavilion, one of the Eight Views of Gwandong, a famed set of scenic spots in Gangwon. Popular for sunrise."},
+    s10:{name:"Ayajin Beach",why:"A beach facing the East Sea with Seoraksan behind it. A coastal trail past Seonang Rock runs alongside."},
+    s11:{name:"Jukdo & Ingu Beaches",why:"Where surfers gather. Ingu Beach, right next to Jukdo, is a little more relaxed."},
+    f1:{name:"Sokcho Hangari Mulhoe",why:"A specialist in mulhoe (chilled raw-fish soup), right by the beach. Less crowded just after opening.",hours:"09:00–20:50 (Sat 21:20)"},
+    f2:{name:"Udongdang",why:"Bukkake udon with handmade noodles and local seafood. Expect a wait.",hours:"10:00–20:30"},
+    f3:{name:"Chunseonne",why:"Known for mulgomtang and gomchi soup (fish stews). Many reviews mention long morning waits."},
+    f4:{name:"Mac Korea",why:"A Sokcho old-timer serving big pork cutlets since 1994."},
+    f5:{name:"Mulchi Sikdang",why:"A local restaurant at Mulchi Port, on the Sokcho–Yangyang border. Known for mulhoe and braised flounder."},
+    f6:{name:"Dongmyeong-dong Potato Ongsimi",why:"Hand-shaped potato dumpling soup and potato pancakes. Open for lunch only.",hours:"Mon–Sat 10:00–15:00 · Closed Sun"},
+    f7:{name:"Bongpo Meoguri House",why:"Known for sea urchin rice and abalone mulhoe. The sea is right outside."},
+    f8:{name:"Ayajin Ttoollae",why:"A local Ayajin restaurant serving braised fish and gomchi soup. Opens at 7 a.m.",hours:"Mon–Sat 07:00–19:00 · Sun 07:00–14:30"},
+    f9:{name:"Naksan Beach Restaurant",why:"Korean home-style meals by Naksan Beach. Open from early morning to late evening.",hours:"07:30–22:00"},
+    f10:{name:"Baekchon Makguksu",why:"Only two dishes: buckwheat noodles in chilled dongchimi broth, and sliced boiled pork. Waits can reach 1–2 hours.",hours:"10:30–17:00 · Closed Wed"},
+    f11:{name:"Dongmyeong Port Pocha Street",why:"A street of pojangmacha (Korean street-style pubs) by the sea, serving seafood dishes and drinks. Many stay open from evening into the night; hours vary by stall."},
+    c1:{name:"Eoneu Meotjin Nal Cafe",why:"A third-floor cafe where the Ferris wheel fills the window."},
+    c2:{name:"Okran Pudding",why:"Potato, tofu and chestnut puddings and tarts. Easy to drop in."},
+    c3:{name:"SHLTR",why:"Black interior with floor-to-ceiling sea views. The third floor is the most popular.",hours:"09:30–20:00"},
+    c4:{name:"Coffee Haeyo",why:"Right in front of Deungdae Beach. Known for its crème brûlée biscotti.",hours:"11:00–18:00 · Closed Wed"},
+    c5:{name:"Soul Bridge",why:"A large four-floor brunch cafe with views of both the sea and Seoraksan."},
+    c6:{name:"Chilseong Shipyard",why:"A cafe built around old ship rails, with views of Cheongchoho Lake."},
+    c7:{name:"Tacit",why:"A white building with big windows facing the East Sea. Known for the Tacit latte."},
+    c8:{name:"Nomad",why:"A rattan-style cafe facing Cheonggan Beach. Quieter on weekdays than weekends."},
+    c9:{name:"Ayatt Coffee",why:"A second-floor rooftop cafe overlooking Ayajin Beach.",hours:"10:00–19:00 (last order 18:30)"},
+    c10:{name:"Mahalo Jukdo",why:"A second-floor cafe with a rooftop, by Jukdo Beach.",hours:"10:00–19:00"}
+  };
+
+
+  var ZH = {
+    s1:{name:"束草海水浴场",dist:"步行2分钟",why:"入住后的第一次散步。夜里只剩海浪的声音。"},
+    s2:{name:"束草之眼（摩天轮）",why:"在海滩前缓缓转动的摩天轮。"},
+    s3:{name:"青草湖公园",dist:"车程5分钟",why:"沿着湖边而不是海边的傍晚散步。"},
+    s4:{name:"灵琴亭",why:"以日出闻名的海边岩上凉亭。天亮前到达最合适。"},
+    s5:{name:"阿爸村·手拉渡船",why:"用手拉绳横渡50米水道的小船，通向咸镜道避难民定居的巷弄。"},
+    s6:{name:"束草中央市场",why:"逛逛市场小巷，用小吃开启夜晚。"},
+    s7:{name:"外瓮峙海边步道",why:"紧邻大海的步行小径。"},
+    s8:{name:"洛山寺",why:"俯瞰大海的千年古寺，以义湘台和红莲庵的日出闻名。"},
+    s9:{name:"清涧亭",why:"面朝大海的凉亭，是江原道名胜“关东八景”之一，不少人来此看日出。"},
+    s10:{name:"Ayajin 海水浴场",why:"背靠雪岳山、面朝东海的海滩，旁边有沿着海岸的步道。"},
+    s11:{name:"竹岛·Ingu 海滩",why:"冲浪者聚集的海滩。紧邻竹岛的 Ingu 海滩更为宁静。"},
+    f1:{name:"束草 Hangari 冷生鱼汤",why:"海滩前的冷生鱼片汤（물회）专门店，刚开门时人比较少。",hours:"09:00–20:50（周六至21:20）"},
+    f2:{name:"Udongdang 乌冬",why:"手工揉制的面条配束草海鲜的浇汁乌冬，请预留排队时间。",hours:"10:00–20:30"},
+    f3:{name:"Chunseonne",why:"以 mulgomtang、gomchi 等鱼汤闻名的店，不少评价提到上午排队很久。"},
+    f4:{name:"Mac Korea 猪排",why:"1994年起营业的束草老字号，主打大份炸猪排。"},
+    f5:{name:"Mulchi 食堂",why:"位于束草与襄阳交界的 Mulchi 港的当地食堂，冷生鱼汤和炖鲽鱼是招牌。"},
+    f6:{name:"东明洞土豆丸子汤",why:"用生土豆手工捏成的丸子汤和土豆饼，只在午间营业。",hours:"周一至周六 10:00–15:00 · 周日休息"},
+    f7:{name:"Bongpo Meoguri 之家",why:"以海胆饭和鲍鱼冷生鱼汤闻名，门前就是大海。"},
+    f8:{name:"Ayajin Ttoollae",why:"Ayajin 当地人常去的食堂，供应炖鱼和 gomchi 鱼汤，早上7点就开门。",hours:"周一至周六 07:00–19:00 · 周日 07:00–14:30"},
+    f9:{name:"洛山海边食堂",why:"洛山海滩前的韩式家常菜，从清晨营业到深夜。",hours:"07:30–22:00"},
+    f10:{name:"Baekchon 荞麦冷面",why:"只有荞麦冷面和水煮猪肉片两样，汤底是冰凉的萝卜水泡菜。排队可能长达1–2小时。",hours:"10:30–17:00 · 周三休息"},
+    f11:{name:"东明港布帐马车街",why:"海边的“布帐马车”（韩式路边小酒馆）街，可以一边看海一边享用海鲜下酒菜。多数店铺从傍晚营业到深夜，各家营业时间不同。"},
+    c1:{name:"Eoneu Meotjin Nal 咖啡馆",why:"三楼咖啡馆，窗外就是摩天轮。"},
+    c2:{name:"Okran Pudding",why:"有土豆、豆腐、栗子口味的布丁和挞，顺路进去很方便。"},
+    c3:{name:"SHLTR",why:"黑色内饰配落地窗海景，三楼最受欢迎。",hours:"09:30–20:00"},
+    c4:{name:"Coffee Haeyo",why:"就在灯塔海滩前，招牌是焦糖布蕾饼干。",hours:"11:00–18:00 · 周三休息"},
+    c5:{name:"Soul Bridge",why:"可同时望见大海和雪岳山的四层大型早午餐咖啡馆。"},
+    c6:{name:"七星造船厂咖啡馆",why:"以旧船轨和青草湖景色为特色的咖啡馆。"},
+    c7:{name:"Tacit",why:"白色外观，大窗外是东海。招牌是 Tacit 拿铁。"},
+    c8:{name:"Nomad",why:"藤编风格的咖啡馆，正对清涧海滩，平日比周末清静。"},
+    c9:{name:"Ayatt Coffee",why:"二楼屋顶露台咖啡馆，可俯瞰 Ayajin 海滩。",hours:"10:00–19:00（最后点单18:30）"},
+    c10:{name:"Mahalo Jukdo",why:"竹岛海滩旁的二楼咖啡馆，带露台。",hours:"10:00–19:00"}
+  };
+
+  var JA = {
+    s1:{name:"束草海水浴場",dist:"徒歩2分",why:"チェックイン後の最初の散歩に。夜は波の音だけが残ります。"},
+    s2:{name:"束草アイ（大観覧車）",why:"ビーチの前でゆっくり回る大観覧車。"},
+    s3:{name:"青草湖湖畔公園",dist:"車で5分",why:"海ではなく湖沿いを歩く夕方の散歩。"},
+    s4:{name:"霊琴亭（ヨングムジョン）",why:"日の出の名所として知られる岩の上の東屋。夜明け前に着くのがおすすめ。"},
+    s5:{name:"アバイ村・ケッペ（手漕ぎ渡し船）",why:"50mの水路を手でロープを引いて渡る小舟。咸鏡道からの避難民が住みついた路地へ続きます。"},
+    s6:{name:"束草中央市場",why:"市場の路地を巡り、軽食で夜を始めるコース。"},
+    s7:{name:"外甕峙 海沿いの散策路",why:"海のすぐそばを歩ける散策路。"},
+    s8:{name:"洛山寺（ナクサンサ）",why:"海を見下ろす千年の古刹。義湘台と紅蓮庵から見る日の出で知られます。"},
+    s9:{name:"清澗亭（チョンガンジョン）",why:"江原道を代表する景勝地「関東八景」のひとつで、海に面した東屋。日の出を見に訪れる人が多い場所です。"},
+    s10:{name:"アヤジン海水浴場",why:"雪岳山を背にして東海に面するビーチ。隣には海沿いの遊歩道が続きます。"},
+    s11:{name:"竹島・イングビーチ",why:"サーファーが集まるビーチ。竹島のすぐ隣のイングビーチは少しゆったりしています。"},
+    f1:{name:"束草 ハンガリ・ムルフェ",why:"ビーチ前のムルフェ（冷たい刺身スープ）専門店。開店直後が比較的空いています。",hours:"09:00–20:50（土曜は21:20まで）"},
+    f2:{name:"ウドンダン",why:"手打ち麺に束草の海鮮をのせたぶっかけうどん。待ち時間を見込んでください。",hours:"10:00–20:30"},
+    f3:{name:"チュンソンネ",why:"魚の鍋・スープ（ムルゴムタン、ゴムチクッ）で知られる店。午前中の行列が長いという口コミが多いです。"},
+    f4:{name:"マックコリア（とんかつ）",why:"1994年から続く束草の老舗。特大とんかつが名物です。"},
+    f5:{name:"ムルチ食堂",why:"束草と襄陽の境にあるムルチ港の地元食堂。ムルフェとカレイの煮付けが名物です。"},
+    f6:{name:"東明洞 じゃがいもオンシミ",why:"生のじゃがいもで作るお団子スープ（オンシミ）とじゃがいもチヂミ。ランチのみ営業です。",hours:"月〜土 10:00–15:00 · 日曜定休"},
+    f7:{name:"ボンポ・モグリの店",why:"ウニごはんとアワビのムルフェで知られる店。目の前が海です。"},
+    f8:{name:"アヤジン ットオルレ",why:"アヤジンの地元食堂。魚の煮付けとゴムチ（魚）のスープが名物で、朝7時から開いています。",hours:"月〜土 07:00–19:00 · 日 07:00–14:30"},
+    f9:{name:"洛山ビーチ食堂",why:"洛山ビーチ前の韓国家庭料理。早朝から夜遅くまで営業しています。",hours:"07:30–22:00"},
+    f10:{name:"ペクチョン マッククス",why:"メニューはそば冷麺とゆで豚の2品だけ。冷たい大根の水キムチ（トンチミ）スープが決め手で、待ち時間は1〜2時間になることも。",hours:"10:30–17:00 · 水曜定休"},
+    f11:{name:"東明港のポジャンマチャ通り",why:"海沿いに並ぶポジャンマチャ（韓国式の屋台風居酒屋）の通り。海鮮のおつまみでお酒を楽しめます。夕方から夜遅くまで営業する店が多いですが、営業時間は店ごとに異なります。"},
+    c1:{name:"オヌ・モッチン・ナル カフェ",why:"3階のカフェ。窓いっぱいに大観覧車が見えます。"},
+    c2:{name:"オクラン・プリン",why:"じゃがいも・豆腐・栗のプリンとタルト。気軽に立ち寄れます。"},
+    c3:{name:"SHLTR",why:"ブラックの内装と大きな窓の海景。3階が一番人気です。",hours:"09:30–20:00"},
+    c4:{name:"コーヒーヘヨ",why:"灯台ビーチの目の前。クレームブリュレのビスコッティが名物です。",hours:"11:00–18:00 · 水曜定休"},
+    c5:{name:"ソウルブリッジ",why:"海と雪岳山の両方が見える4階建ての大型ブランチカフェ。"},
+    c6:{name:"七星造船所カフェ",why:"古い船のレールと青草湖の眺めを生かしたカフェ。"},
+    c7:{name:"テシット",why:"白い外観に大きな窓の向こうは東海。テシット・ラテが看板メニューです。"},
+    c8:{name:"ノマド",why:"ラタン調のカフェで、チョンガン海岸が目の前。週末より平日が静かです。"},
+    c9:{name:"アヤット・コーヒー",why:"アヤジンビーチを見下ろす2階のルーフトップカフェ。",hours:"10:00–19:00（ラストオーダー18:30）"},
+    c10:{name:"マハロ 竹島",why:"竹島ビーチそばの2階カフェ。ルーフトップもあります。",hours:"10:00–19:00"}
+  };
+
+  var TX = {en:EN, zh:ZH, ja:JA};
+  var LANG_KEYS = ["ko","en","zh","ja"];
+  var LANG_LABEL = {ko:"한국어", en:"EN", zh:"中文", ja:"日本語"};
+
+  var TIME_KEYS = ["dawn","day","dusk","night"];
+  var CAT_KEYS = ["spot","food","cafe"];
+  var AREA_KEYS = ["all","속초","양양","고성"];
+
+  var L = {
+    ko:{
+      htmlLang:"ko", title:"호텔어라운드 속초 · 로컬지도",
+      h1:"호텔에서 가까운 순서로",
+      lede:"속초에서 양양, 고성까지. 지금 이 시간에 어울리는 곳에만 불이 켜져요.",
+      mapTitle:"호텔을 중심으로 한 거리 개념도. 위쪽이 고성, 아래쪽이 양양 방향이에요. 정확한 위치는 각 장소의 지도 링크에서 확인할 수 있어요.",
+      sea:"동해", north:"고성 방면", south:"양양 방면", hotel:"호텔",
+      r1:"도보 10분", r2:"차 10분", r3:"차 20분", r4:"차 30분",
+      cap:"방향과 거리는 대략적인 개념도예요. 정확한 위치와 이동 시간은 아래 지도 링크에서 확인하세요.",
+      foot1:"영업시간과 휴무일은 수시로 바뀝니다. 출발 전에 지도 앱에서 한 번 더 확인해 주세요.",
+      foot2:"이동 시간은 도로와 시간대에 따라 달라집니다. 양양과 고성 방면은 주말과 성수기에 더 걸릴 수 있어요.",
+      foot3:"구글지도의 길찾기는 국내에서 제한될 수 있어요. 네이버지도와 카카오맵도 함께 연결했어요.",
+      foot4:"",
+      ariaTimes:"시간대 선택", ariaMap:"호텔 기준 거리 개념도", ariaCats:"카테고리", ariaAreas:"지역 선택",
+      now:"지금",
+      cats:{spot:"가볼 곳",food:"맛집",cafe:"카페"},
+      areas:{all:"전체","속초":"속초","양양":"양양","고성":"고성"},
+      times:{dawn:["새벽","해 뜰 무렵"],day:["낮","낮 시간"],dusk:["일몰","해 질 무렵"],night:["밤","밤 시간"]},
+      ring:{1:"도보 10분 이내",2:"차로 10분 안팎",3:"차로 20분 안팎",4:"차로 30분 안팎"},
+      linkOrder:[["naver","네이버지도"],["kakao","카카오맵"],["google","구글지도"]],
+      noteOn:function(n, phrase){ return phrase + "에 어울리는 곳이 " + n + "곳 있어요."; },
+      noteNone:function(phrase){ return phrase + "에 특별히 권하는 곳은 없어요. 다른 시간대를 눌러보세요."; },
+      noteEmptyArea:"이 지역에는 아직 소개해 드리는 곳이 없어요. 다른 지역을 눌러보세요.",
+      empty:{
+        food:{dawn:"이른 시간에 문을 여는 식당은 드물어요. 대부분 오전 9~10시에 시작해요.",
+              night:"밤에는 문 연 식당이 적어요. 저녁 영업은 8시 전후에 끝나는 곳이 많으니 일찍 다녀오세요."},
+        cafe:{dawn:"카페는 대부분 오전 9시 반 이후에 문을 열어요.",
+              night:"카페는 대체로 저녁 8시 전에 닫아요. 밤에는 ‘가볼 곳’에서 해변 산책을 골라보세요."}
+      },
+      pinAria:function(i, name, on){ return i + "번 " + name + (on ? ", 지금 시간대에 어울려요" : ""); }
+    },
+    en:{
+      htmlLang:"en", title:"Hotel Around Sokcho · Local Map",
+      h1:"Nearest first, from the hotel",
+      lede:"From Sokcho to Yangyang and Goseong. Only places that suit this time of day light up.",
+      mapTitle:"A distance sketch centered on the hotel. Goseong lies toward the top, Yangyang toward the bottom. Use each place's map links for exact locations.",
+      sea:"East Sea", north:"To Goseong", south:"To Yangyang", hotel:"Hotel",
+      r1:"10 min walk", r2:"10 min drive", r3:"20 min drive", r4:"30 min drive",
+      cap:"Directions and distances are approximate. Use the map links below for exact locations and travel times.",
+      foot1:"Opening hours and closing days change often. Please check in your map app before you go.",
+      foot2:"Travel times vary with traffic and season. Yangyang and Goseong can take longer on weekends and in peak season.",
+      foot3:"Turn-by-turn directions in Google Maps may be limited in Korea. Naver Map and Kakao Map links are provided too.",
+      foot4:"This page is translated from Korean. Some expressions may sound unnatural. If anything is unclear, please refer to the Korean original.",
+      ariaTimes:"Time of day", ariaMap:"Distance sketch from the hotel", ariaCats:"Category", ariaAreas:"Area",
+      now:"Now",
+      cats:{spot:"Sights",food:"Food",cafe:"Cafes"},
+      areas:{all:"All","속초":"Sokcho","양양":"Yangyang","고성":"Goseong"},
+      times:{dawn:["Dawn","around sunrise"],day:["Day","during the day"],dusk:["Dusk","around sunset"],night:["Night","at night"]},
+      ring:{1:"Within a 10 min walk",2:"About 10 min by car",3:"About 20 min by car",4:"About 30 min by car"},
+      linkOrder:[["google","Google Maps"],["naver","Naver Map"],["kakao","Kakao Map"]],
+      noteOn:function(n, phrase){ return n + (n === 1 ? " place we recommend " : " places we recommend ") + phrase + "."; },
+      noteNone:function(phrase){ return "Nothing special to recommend " + phrase + ". Try another time of day."; },
+      noteEmptyArea:"Nothing listed for this area yet. Try another area.",
+      empty:{
+        food:{dawn:"Few restaurants open this early. Most start between 9 and 10 a.m.",
+              night:"Few restaurants are open at night. Many close around 8 p.m., so go early for dinner."},
+        cafe:{dawn:"Most cafes open after 9:30 a.m.",
+              night:"Most cafes close before 8 p.m. For the night, try a beach walk under Sights."}
+      },
+      pinAria:function(i, name, on){ return i + ". " + name + (on ? ", suits this time of day" : ""); }
+    }
+  };
+
+
+  L.zh = {
+    htmlLang:"zh-CN", title:"Hotel Around Sokcho · 本地地图",
+    h1:"由近及远，从酒店出发",
+    lede:"从束草到襄阳、高城。只有适合现在这个时段的地方才会亮起。",
+    mapTitle:"以酒店为中心的距离示意图。上方是高城方向，下方是襄阳方向。准确位置请通过各地点的地图链接确认。",
+    sea:"东海", north:"往高城", south:"往襄阳", hotel:"酒店",
+    r1:"步行10分钟", r2:"车程10分钟", r3:"车程20分钟", r4:"车程30分钟",
+    cap:"方向与距离仅为大致示意。准确位置和所需时间请通过下方地图链接确认。",
+    foot1:"营业时间和休息日经常变动，出发前请在地图应用中再确认一次。",
+    foot2:"所需时间会因路况和季节而异。周末和旺季前往襄阳、高城可能需要更长时间。",
+    foot3:"谷歌地图在韩国的导航功能可能受限，我们同时提供了 Naver Map 和 Kakao Map 链接。",
+      foot4:"本页内容由韩语翻译而成，部分表述可能不够自然。如有疑问，请以韩语原文为准。",
+    ariaTimes:"选择时段", ariaMap:"以酒店为基准的距离示意图", ariaCats:"分类", ariaAreas:"选择地区",
+    now:"现在",
+    cats:{spot:"景点",food:"美食",cafe:"咖啡馆"},
+    areas:{all:"全部","속초":"束草","양양":"襄阳","고성":"高城"},
+    times:{dawn:["清晨","日出前后"],day:["白天","白天"],dusk:["日落","日落前后"],night:["夜晚","夜间"]},
+    ring:{1:"步行10分钟以内",2:"车程约10分钟",3:"车程约20分钟",4:"车程约30分钟"},
+    linkOrder:[["naver","Naver Map"],["kakao","Kakao Map"],["google","谷歌地图"]],
+    noteOn:function(n, phrase){ return "适合" + phrase + "的地方有" + n + "处。"; },
+    noteNone:function(phrase){ return "暂时没有特别适合" + phrase + "的推荐。请试试其他时段。"; },
+    noteEmptyArea:"该地区暂无推荐。请选择其他地区。",
+    empty:{
+      food:{dawn:"这么早营业的餐厅不多，大多从上午9点到10点开始营业。",
+            night:"夜间营业的餐厅很少，不少店在晚上8点左右打烊，请早些用餐。"},
+      cafe:{dawn:"咖啡馆大多在上午9点半以后开门。",
+            night:"咖啡馆大多在晚上8点前关门。夜晚不妨在“景点”里选一处海边散步。"}
+    },
+    pinAria:function(i, name, on){ return i + "号 " + name + (on ? "，适合此时段" : ""); }
+  };
+  L.ja = {
+    htmlLang:"ja", title:"Hotel Around Sokcho · ローカルマップ",
+    h1:"ホテルから近い順に",
+    lede:"束草から襄陽、高城まで。今の時間帯にふさわしい場所だけが灯ります。",
+    mapTitle:"ホテルを中心にした距離のイメージ図。上が高城方面、下が襄陽方面です。正確な場所は各スポットの地図リンクでご確認ください。",
+    sea:"東海", north:"高城方面", south:"襄陽方面", hotel:"ホテル",
+    r1:"徒歩10分", r2:"車で10分", r3:"車で20分", r4:"車で30分",
+    cap:"方角と距離はおおよそのイメージです。正確な場所と所要時間は下の地図リンクでご確認ください。",
+    foot1:"営業時間や定休日は頻繁に変わります。出発前に地図アプリでもう一度ご確認ください。",
+    foot2:"所要時間は道路状況や時期によって変わります。襄陽・高城方面は週末や繁忙期に時間がかかることがあります。",
+    foot3:"韓国ではGoogleマップの経路案内が制限される場合があります。Naver MapとKakao Mapのリンクも用意しています。",
+      foot4:"このページは韓国語から翻訳したもので、不自然な表現が含まれる場合があります。ご不明な点は韓国語の原文をご確認ください。",
+    ariaTimes:"時間帯を選ぶ", ariaMap:"ホテルからの距離イメージ図", ariaCats:"カテゴリ", ariaAreas:"エリアを選ぶ",
+    now:"今",
+    cats:{spot:"見どころ",food:"グルメ",cafe:"カフェ"},
+    areas:{all:"すべて","속초":"束草","양양":"襄陽","고성":"高城"},
+    times:{dawn:["早朝","日の出のころ"],day:["昼","昼の時間帯"],dusk:["夕暮れ","日没のころ"],night:["夜","夜の時間帯"]},
+    ring:{1:"徒歩10分以内",2:"車で約10分",3:"車で約20分",4:"車で約30分"},
+    linkOrder:[["google","Googleマップ"],["naver","Naver Map"],["kakao","Kakao Map"]],
+    noteOn:function(n, phrase){ return phrase + "におすすめの場所が" + n + "か所あります。"; },
+    noteNone:function(phrase){ return phrase + "に特におすすめの場所はありません。別の時間帯をお試しください。"; },
+    noteEmptyArea:"このエリアにはまだ掲載がありません。別のエリアをお選びください。",
+    empty:{
+      food:{dawn:"早い時間に開いている飲食店は多くありません。多くは午前9〜10時から営業します。",
+            night:"夜に開いている飲食店は少なめです。夜8時ごろに閉まる店が多いので、早めにどうぞ。"},
+      cafe:{dawn:"カフェの多くは午前9時半以降に開きます。",
+            night:"カフェの多くは夜8時前に閉まります。夜は「見どころ」から海辺の散歩を選んでみてください。"}
+    },
+    pinAria:function(i, name, on){ return i + "番 " + name + (on ? "、この時間帯におすすめ" : ""); }
+  };
+
+  var RING_R = {1:42,2:84,3:126,4:165};
+  var CX = 170, CY = 210;
+
+  var params = new URLSearchParams(location.search);
+  var REVIEW = params.get("review") === "1";
+  if (REVIEW) document.getElementById("app").classList.add("review");
+
+  function initialLang(){
+    var q = params.get("lang");
+    if (LANG_KEYS.indexOf(q) > -1) return q;
+    var nav = (navigator.language || "").toLowerCase();
+    if (nav.indexOf("ko") === 0) return "ko";
+    if (nav.indexOf("zh") === 0) return "zh";
+    if (nav.indexOf("ja") === 0) return "ja";
+    return "en";
+  }
+  function autoTime(){
+    var h = new Date().getHours();
+    if (h >= 4 && h < 8) return "dawn";
+    if (h >= 8 && h < 17) return "day";
+    if (h >= 17 && h < 20) return "dusk";
+    return "night";
+  }
+  var NOW = autoTime();
+  var state = {lang:initialLang(), cat:"spot", time:NOW, area:"all", sel:null, focus:null};
+
+  function T(){ return L[state.lang]; }
+  function text(p){
+    var tr = state.lang !== "ko" && TX[state.lang] ? TX[state.lang][p.id] : null;
+    return {
+      name: tr && tr.name ? tr.name : p.name,
+      why: tr && tr.why ? tr.why : p.why,
+      hours: tr && tr.hours ? tr.hours : p.hours,
+      dist: tr && tr.dist ? tr.dist : (state.lang === "ko" ? p.dist : null)
+    };
+  }
+  function areaName(p){ return T().areas[p.area] || p.area; }
+
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, txt){
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (txt != null) e.textContent = txt;
+    return e;
+  }
+  function sv(tag, attrs){
+    var e = document.createElementNS(SVGNS, tag);
+    if (attrs) for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function items(){
+    var list = (PLACES[state.cat] || [])
+      .map(function(p, i){ return {p:p, i:i, on:p.tags.indexOf(state.time) > -1}; })
+      .filter(function(x){ return state.area === "all" || x.p.area === state.area; });
+    list.sort(function(x, y){
+      if (x.on !== y.on) return x.on ? -1 : 1;
+      if (x.p.ring !== y.p.ring) return x.p.ring - y.p.ring;
+      return x.i - y.i;
+    });
+    return list;
+  }
+
+  function select(id, scroll){
+    state.sel = (state.sel === id) ? null : id;
+    render(scroll);
+  }
+
+  function applyStatic(){
+    var t = T();
+    document.documentElement.setAttribute("lang", t.htmlLang);
+    document.title = t.title;
+    var nodes = document.querySelectorAll("[data-i18n]");
+    for (var i = 0; i < nodes.length; i++) {
+      var key = nodes[i].getAttribute("data-i18n");
+      if (t[key] != null) { nodes[i].textContent = t[key]; nodes[i].hidden = (t[key] === ""); }
+    }
+    renderLangs();
+    document.getElementById("times").setAttribute("aria-label", t.ariaTimes);
+    document.getElementById("mapfig").setAttribute("aria-label", t.ariaMap);
+    document.getElementById("tabs").setAttribute("aria-label", t.ariaCats);
+    document.getElementById("areas").setAttribute("aria-label", t.ariaAreas);
+  }
+
+  function renderLangs(){
+    var box = document.getElementById("langs");
+    box.textContent = "";
+    LANG_KEYS.forEach(function(k){
+      var b = el("button", {type:"button", lang:(k === "zh" ? "zh-CN" : k), "aria-pressed": String(state.lang === k), "data-fid":"l-" + k}, LANG_LABEL[k]);
+      b.addEventListener("click", function(){ state.lang = k; state.focus = "l-" + k; render(false); });
+      box.appendChild(b);
+    });
+  }
+
+  function renderTimes(){
+    var box = document.getElementById("times");
+    box.textContent = "";
+    TIME_KEYS.forEach(function(k){
+      var b = el("button", {type:"button","aria-pressed": String(state.time === k), "data-fid":"t-" + k});
+      b.appendChild(document.createTextNode(T().times[k][0]));
+      b.appendChild(el("span", {"class":"now"}, k === NOW ? T().now : ""));
+      b.addEventListener("click", function(){ state.time = k; state.sel = null; state.focus = "t-" + k; render(false); });
+      box.appendChild(b);
+    });
+  }
+
+  function renderTabs(){
+    var box = document.getElementById("tabs");
+    box.textContent = "";
+    CAT_KEYS.forEach(function(k){
+      var b = el("button", {type:"button", role:"tab", "aria-selected": String(state.cat === k), "data-fid":"c-" + k}, T().cats[k]);
+      b.addEventListener("click", function(){ state.cat = k; state.sel = null; state.focus = "c-" + k; render(false); });
+      box.appendChild(b);
+    });
+  }
+
+  function renderAreas(){
+    var box = document.getElementById("areas");
+    box.textContent = "";
+    AREA_KEYS.forEach(function(k){
+      var b = el("button", {type:"button", "aria-pressed": String(state.area === k), "data-fid":"a-" + k}, T().areas[k]);
+      b.addEventListener("click", function(){ state.area = k; state.sel = null; state.focus = "a-" + k; render(false); });
+      box.appendChild(b);
+    });
+  }
+
+  function renderNote(list){
+    var t = T();
+    var n = list.filter(function(x){ return x.on; }).length;
+    var phrase = t.times[state.time][1];
+    var msg;
+    if (list.length === 0) {
+      msg = t.noteEmptyArea;
+    } else if (n > 0) {
+      msg = t.noteOn(n, phrase);
+    } else {
+      msg = (t.empty[state.cat] && t.empty[state.cat][state.time]) || t.noteNone(phrase);
+    }
+    document.getElementById("note").textContent = msg;
+  }
+
+  function renderPins(list){
+    var g = document.getElementById("pins");
+    g.textContent = "";
+    list.forEach(function(x, idx){
+      var rad = x.p.a * Math.PI / 180;
+      var r = RING_R[x.p.ring] - 5;
+      var cx = CX + r * Math.cos(rad);
+      var cy = CY - r * Math.sin(rad);
+      var cls = "pin" + (x.on ? " on" : "") + (state.sel === x.p.id ? " sel" : "");
+      var pin = sv("g", {"class":cls, transform:"translate(" + cx.toFixed(1) + "," + cy.toFixed(1) + ")",
+        role:"button", tabindex:"0", "data-fid":"p-" + x.p.id,
+        "aria-label":T().pinAria(idx + 1, text(x.p).name, x.on)});
+      pin.appendChild(sv("circle", {r:"18", fill:"transparent"}));
+      pin.appendChild(sv("circle", {"class":"halo", r:"15"}));
+      pin.appendChild(sv("circle", {"class":"disc", r:"11"}));
+      var tx = sv("text", {"class":"num"});
+      tx.textContent = String(idx + 1);
+      pin.appendChild(tx);
+      pin.addEventListener("click", function(){ state.focus = "p-" + x.p.id; select(x.p.id, true); });
+      pin.addEventListener("keydown", function(e){
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); state.focus = "p-" + x.p.id; select(x.p.id, true); }
+      });
+      g.appendChild(pin);
+    });
+  }
+
+  function mapHref(kind, q){
+    var enc = encodeURIComponent(q);
+    if (kind === "naver") return "https://map.naver.com/p/search/" + enc;
+    if (kind === "kakao") return "https://map.kakao.com/link/search/" + enc;
+    return "https://www.google.com/maps/search/?api=1&query=" + enc;
+  }
+
+  function renderList(list){
+    var t = T();
+    var ol = document.getElementById("list");
+    ol.textContent = "";
+    var anyOn = list.some(function(x){ return x.on; });
+    list.forEach(function(x, idx){
+      var p = x.p;
+      var tx = text(p);
+      var li = el("li", {"class":"item" + (x.on ? " on" : "") + (anyOn && !x.on ? " dim" : "") + (state.sel === p.id ? " sel" : ""), id:"item-" + p.id});
+      li.appendChild(el("div", {"class":"idx","aria-hidden":"true"}, String(idx + 1)));
+      var body = el("div");
+      body.appendChild(el("p", {"class":"dist"}, (tx.dist || t.ring[p.ring]) + " · " + areaName(p)));
+      var nameBtn = el("button", {type:"button", "class":"name", "data-fid":"n-" + p.id}, tx.name);
+      nameBtn.addEventListener("click", function(){ state.focus = "n-" + p.id; select(p.id, false); });
+      var h = el("h2", {style:"margin:0"});
+      h.appendChild(nameBtn);
+      body.appendChild(h);
+      if (state.lang !== "ko") body.appendChild(el("p", {"class":"koname", lang:"ko"}, p.name));
+      body.appendChild(el("p", {"class":"why"}, tx.why));
+      if (tx.hours) body.appendChild(el("p", {"class":"hours"}, tx.hours));
+      var links = el("div", {"class":"links"});
+      t.linkOrder.forEach(function(lk){
+        links.appendChild(el("a", {href:mapHref(lk[0], p.q), target:"_blank", rel:"noopener noreferrer"}, lk[1]));
+      });
+      body.appendChild(links);
+      if (REVIEW && p.check && p.check.length) {
+        body.appendChild(el("p", {"class":"check", lang:"ko"}, "확인 필요: " + p.check.join(" · ")));
+      }
+      li.appendChild(body);
+      ol.appendChild(li);
+    });
+  }
+
+  function render(scroll){
+    document.documentElement.setAttribute("data-time", state.time);
+    applyStatic();
+    var list = items();
+    renderTimes();
+    renderTabs();
+    renderAreas();
+    renderNote(list);
+    renderPins(list);
+    renderList(list);
+    if (state.focus) {
+      var f = document.querySelector('[data-fid="' + state.focus + '"]');
+      if (f && f.focus) f.focus({preventScroll:true});
+      state.focus = null;
+    }
+    if (scroll && state.sel) {
+      var node = document.getElementById("item-" + state.sel);
+      if (node) node.scrollIntoView({block:"nearest", behavior: reduce ? "auto" : "smooth"});
+    }
+  }
+
+  render(false);
+})();
+</script>
 </body>
 </html>
