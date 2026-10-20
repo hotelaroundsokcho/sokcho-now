@@ -193,7 +193,7 @@
   }
   @keyframes starbody{0%,100%{opacity:.78}50%{opacity:1}}
 
-  .tabs{display:flex;gap:22px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+  .tabs{display:flex;flex-wrap:wrap;gap:0 18px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
   .tabs button{
     font:inherit;font-family:var(--display);font-size:17px;font-weight:400;
     background:none;border:0;color:var(--muted);padding:8px 0 10px;cursor:pointer;
@@ -227,10 +227,10 @@
   }
   .name:focus-visible,.links a:focus-visible,.times button:focus-visible,.tabs button:focus-visible,.areas button:focus-visible,.langs button:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}
   .why{margin:4px 0 0}
-  .hours{margin:2px 0 0;font-size:15px;color:var(--muted)}
   .links{margin:4px 0 0;display:flex;gap:6px;font-size:15px;flex-wrap:wrap}
   .links a{color:var(--ink);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px;padding:0 8px 0 0}
   .check{margin:8px 0 0;font-size:12.5px;color:var(--glow-ink);background:var(--glow);display:inline-block;padding:2px 8px;border-radius:4px}
+  .notice{margin:18px 0 6px;padding:10px 12px;border-left:3px solid var(--glow);border-radius:4px;background:var(--panel);color:var(--ink);font-size:15px}
   .reviewbar{display:none;background:var(--glow);color:var(--glow-ink);font-size:13px;padding:6px 10px;border-radius:6px;margin:0 0 16px}
   .review .reviewbar{display:block}
 
@@ -315,12 +315,13 @@
     <figcaption class="maplabel" style="font-size:14px;margin-top:2px" data-i18n="cap"></figcaption>
   </figure>
 
+  <p class="notice" data-i18n="notice"></p>
+
   <div class="tabs" role="tablist" id="tabs"></div>
   <div class="areas" role="group" id="areas"></div>
   <ol class="list" id="list" role="tabpanel"></ol>
 
   <div class="foot">
-    <p data-i18n="foot1"></p>
     <p data-i18n="foot2"></p>
     <p data-i18n="foot3"></p>
     <p data-i18n="foot4"></p>
@@ -337,47 +338,55 @@
      ring: 1 도보 10분 / 2 차 10분 안팎 / 3 차 20분 안팎 / 4 차 30분 안팎 (추정)
      a: 개념도 방위각(°, 동=0, 북=90, 남=-90)
      tags: 어울리는 시간대(에디토리얼 판단, 실시간 영업 여부 아님)
-     hours: 근거가 있는 경우만 표기 / check: 게시 전 확인 필요 항목(검수 모드 전용)
+     영업시간·휴무일은 싣지 않음(방문 전 직접 문의 안내). 시간 정보를 다시 넣지 말 것
+     check: 게시 전 확인 필요 항목(검수 모드 전용)
      q: 지도 검색어(한국어 상호가 검색 정확도가 높아 영문판에서도 그대로 사용)
      ------------------------------------------------------------------ */
   var PLACES = {
     spot:[
       {id:"s1",area:"속초",name:"속초해수욕장",q:"속초해수욕장",ring:1,dist:"도보 2분",a:0,tags:["dawn","day","dusk","night"],why:"체크인 후 첫 산책. 밤에는 파도 소리만 남아요.",check:[]},
-      {id:"s2",area:"속초",name:"속초아이",q:"속초아이 대관람차",ring:1,a:42,tags:["dusk","night"],why:"해수욕장 앞에서 천천히 도는 대관람차.",check:["운영시간","거리"]},
+      {id:"s2",area:"속초",name:"속초아이",q:"속초아이 대관람차",ring:1,a:42,tags:["dusk","night"],why:"해수욕장 앞에서 천천히 도는 대관람차.",check:["거리"]},
       {id:"s3",area:"속초",name:"청초호 호수공원",q:"청초호 호수공원",ring:2,dist:"차로 5분",a:115,tags:["dusk","night"],why:"바다 대신 호수를 따라 걷는 저녁 산책.",check:[]},
       {id:"s4",area:"속초",name:"영금정",q:"속초 영금정",ring:2,a:72,tags:["dawn","day"],why:"일출 명소로 알려진 바위 정자. 해 뜨기 전에 도착하면 좋아요.",check:["거리"]},
-      {id:"s5",area:"속초",name:"아바이마을·갯배",q:"속초 갯배",ring:2,a:92,tags:["day"],why:"50m 물길을 손으로 당겨 건너는 배. 함경도 실향민이 정착한 골목으로 이어져요.",check:["거리","요금·운항시간"]},
+      {id:"s5",area:"속초",name:"아바이마을·갯배",q:"속초 갯배",ring:2,a:92,tags:["day"],why:"50m 물길을 손으로 당겨 건너는 배. 함경도 실향민이 정착한 골목으로 이어져요.",check:["거리","요금"]},
       {id:"s6",area:"속초",name:"속초중앙시장",q:"속초중앙시장",ring:2,a:140,tags:["day","dusk"],why:"시장 골목을 돌며 간식으로 저녁을 시작하는 코스.",check:["거리"]},
-      {id:"s7",area:"속초",name:"외옹치 바다향기로",q:"외옹치 바다향기로",ring:2,a:-70,tags:["day","dusk"],why:"바다 바로 옆을 따라 걷는 산책길.",check:["운영시간","거리"]},
-      {id:"s8",area:"양양",name:"낙산사",q:"양양 낙산사",ring:3,a:-85,tags:["dawn","day"],why:"바다를 내려다보는 천년 사찰. 의상대와 홍련암에서 맞는 일출로 알려져 있어요.",check:["거리","입장료·개방시간"]},
+      {id:"s7",area:"속초",name:"외옹치 바다향기로",q:"외옹치 바다향기로",ring:2,a:-70,tags:["day","dusk"],why:"바다 바로 옆을 따라 걷는 산책길.",check:["거리"]},
+      {id:"s8",area:"양양",name:"낙산사",q:"양양 낙산사",ring:3,a:-85,tags:["dawn","day"],why:"바다를 내려다보는 천년 사찰. 의상대와 홍련암에서 맞는 일출로 알려져 있어요.",check:["거리","입장료"]},
       {id:"s9",area:"고성",name:"청간정",q:"고성 청간정",ring:3,a:84,tags:["dawn","day"],why:"바다를 마주한 관동팔경의 정자. 일출을 보러 오는 사람이 많아요.",check:["거리"]},
       {id:"s10",area:"고성",name:"아야진해수욕장",q:"아야진해수욕장",ring:3,a:98,tags:["day","dusk"],why:"설악산을 뒤에 두고 동해를 마주하는 해변. 옆으로 서낭바위 산책로가 이어져요.",check:["거리"]},
       {id:"s11",area:"양양",name:"죽도해변·인구해변",q:"양양 죽도해변",ring:4,a:-95,tags:["day","dusk"],why:"서퍼들이 모이는 해변. 죽도 바로 옆 인구해변은 조금 더 여유로워요.",check:["거리(30분 초과 가능)"]}
     ],
     food:[
-      {id:"f1",area:"속초",name:"속초항아리물회",q:"속초항아리물회",ring:1,a:-25,tags:["day","dusk"],why:"해수욕장 앞 물회 전문점. 오픈 직후가 덜 붐벼요.",hours:"09:00–20:50 (토 21:20)",check:["영업시간","거리"]},
-      {id:"f2",area:"속초",name:"우동당",q:"속초 우동당",ring:1,a:18,tags:["day","dusk"],why:"직접 반죽한 면에 속초 해산물을 얹은 붓가케 우동. 대기를 감안하세요.",hours:"10:00–20:30",check:["거리"]},
-      {id:"f3",area:"속초",name:"춘선네",q:"속초 춘선네 곰치국",ring:2,a:160,tags:["day"],why:"물곰탕과 곰치국으로 알려진 집. 오전에 대기가 길다는 후기가 많아요.",check:["주소","영업시간","거리"]},
-      {id:"f4",area:"속초",name:"맥코리아",q:"속초 맥코리아 돈까스",ring:2,a:195,tags:["day"],why:"1994년부터 이어온 속초 노포 왕돈까스.",check:["주소","영업시간","거리"]},
-      {id:"f5",area:"양양",name:"물치식당",q:"양양 물치식당",ring:2,a:-80,tags:["day","dusk"],why:"속초와 양양 경계의 물치항 로컬 식당. 물회와 가자미조림이 대표예요.",check:["영업시간(자료마다 상이)","거리"]},
-      {id:"f6",area:"속초",name:"동명동 감자옹심이",q:"동명동 감자옹심이 속초",ring:3,a:135,tags:["day"],why:"생감자로 빚은 옹심이와 감자전. 점심에만 열어요.",hours:"월–토 10:00–15:00 · 일요일 휴무",check:["거리"]},
-      {id:"f7",area:"속초",name:"봉포머구리집",q:"속초 봉포머구리집",ring:3,a:78,tags:["day"],why:"성게알밥과 전복물회로 알려진 집. 바로 앞이 바다예요.",check:["영업시간","거리"]},
-      {id:"f8",area:"고성",name:"아야진 또올래",q:"고성 아야진 또올래",ring:3,a:95,tags:["dawn","day"],why:"장치조림과 곰치국을 내는 아야진 현지 식당. 아침 7시부터 열어요.",hours:"월–토 07:00–19:00 · 일 07:00–14:30",check:["거리"]},
-      {id:"f9",area:"양양",name:"낙산해변식당",q:"양양 낙산해변식당",ring:3,a:-95,tags:["dawn","day","dusk"],why:"낙산해변 앞 한식 집밥. 이른 아침부터 밤까지 열어요.",hours:"07:30–22:00",check:["영업시간","거리"]},
-      {id:"f10",area:"고성",name:"백촌막국수",q:"고성 백촌막국수",ring:4,a:100,tags:["day"],why:"동치미 국물 막국수와 편육 두 가지만 내는 집. 대기가 1~2시간까지 길어져요.",hours:"10:30–17:00 · 수요일 휴무",check:["영업시간","거리","대기 방식"]},
-      {id:"f11",area:"속초",name:"동명항 포장마차 거리",q:"동명항 포장마차 거리 속초",ring:2,a:80,tags:["dusk","night"],why:"바다를 바로 앞에 두고 해산물 안주에 한잔하는 포장마차 거리. 저녁부터 밤까지 여는 곳이 많고, 가게마다 시간이 달라요.",check:["영업시간(가게별 상이)","거리"]}
+      {id:"f1",area:"속초",name:"속초항아리물회",q:"속초항아리물회",ring:1,a:-25,tags:["day","dusk"],why:"해수욕장 앞 물회 전문점.",check:["거리"]},
+      {id:"f2",area:"속초",name:"우동당",q:"속초 우동당",ring:1,a:18,tags:["day","dusk"],why:"직접 반죽한 면에 속초 해산물을 얹은 붓가케 우동. 대기를 감안하세요.",check:["거리"]},
+      {id:"f3",area:"속초",name:"춘선네",q:"속초 춘선네 곰치국",ring:2,a:160,tags:["day"],why:"물곰탕과 곰치국으로 알려진 집. 오전에 대기가 길다는 후기가 많아요.",check:["주소","거리"]},
+      {id:"f4",area:"속초",name:"맥코리아",q:"속초 맥코리아 돈까스",ring:2,a:195,tags:["day"],why:"1994년부터 이어온 속초 노포 왕돈까스.",check:["주소","거리"]},
+      {id:"f5",area:"양양",name:"물치식당",q:"양양 물치식당",ring:2,a:-80,tags:["day","dusk"],why:"속초와 양양 경계의 물치항 로컬 식당. 물회와 가자미조림이 대표예요.",check:["거리"]},
+      {id:"f6",area:"속초",name:"동명동 감자옹심이",q:"동명동 감자옹심이 속초",ring:3,a:135,tags:["day"],why:"생감자로 빚은 옹심이와 감자전. ",check:["거리"]},
+      {id:"f7",area:"속초",name:"봉포머구리집",q:"속초 봉포머구리집",ring:3,a:78,tags:["day"],why:"성게알밥과 전복물회로 알려진 집. 바로 앞이 바다예요.",check:["거리"]},
+      {id:"f8",area:"고성",name:"아야진 또올래",q:"고성 아야진 또올래",ring:3,a:95,tags:["dawn","day"],why:"장치조림과 곰치국을 내는 아야진 현지 식당. ",check:["거리"]},
+      {id:"f9",area:"양양",name:"낙산해변식당",q:"양양 낙산해변식당",ring:3,a:-95,tags:["dawn","day","dusk"],why:"낙산해변 앞 한식 집밥. ",check:["거리"]},
+      {id:"f10",area:"고성",name:"백촌막국수",q:"고성 백촌막국수",ring:4,a:100,tags:["day"],why:"동치미 국물 막국수와 편육 두 가지만 내는 집. 대기가 1~2시간까지 길어져요.",check:["거리","대기 방식"]},
+      {id:"f11",area:"속초",name:"동명항 포장마차 거리",q:"동명항 포장마차 거리 속초",ring:2,a:80,tags:["dusk","night"],why:"바다를 바로 앞에 두고 해산물 안주에 한잔하는 포장마차 거리.",check:["거리"]},
+      {id:"f12",area:"속초",name:"단천식당",q:"속초 단천식당 아바이마을",ring:2,a:100,tags:["day"],why:"아바이마을을 대표하는 이북식 순대집. 아바이순대와 오징어순대에 명태회무침을 곁들여 먹는 조합을 많이 권해요. 점심 무렵에는 줄이 길어요.",check:["거리","주소"]},
+      {id:"f13",area:"속초",name:"신다신",q:"속초 신다신 아바이마을",ring:2,a:120,tags:["day","dusk"],why:"아바이마을의 순대국밥집. 가리국밥과 아바이순대국밥을 많이 찾고, 점심·저녁 피크에는 대기가 생겨요.",check:["거리","주소","상호(다신식당/신다신 표기 상이)"]}
     ],
     cafe:[
-      {id:"c1",area:"속초",name:"어느멋진날 카페",q:"어느멋진날 속초",ring:1,a:30,tags:["day","dusk"],why:"창밖으로 대관람차가 보이는 3층 카페.",check:["영업시간","거리"]},
-      {id:"c2",area:"속초",name:"옥란푸딩",q:"속초 옥란푸딩",ring:1,a:-10,tags:["day"],why:"감자·두부·밤 푸딩과 타르트. 가볍게 들르기 좋아요.",check:["주소","영업시간"]},
-      {id:"c3",area:"속초",name:"셜터 SHLTR",q:"속초 셜터 SHLTR",ring:2,a:58,tags:["day","dusk"],why:"블랙 인테리어에 통창 바다 뷰. 3층이 가장 인기예요.",hours:"09:30–20:00",check:["영업시간","거리"]},
-      {id:"c4",area:"속초",name:"커피해요",q:"속초 커피해요",ring:2,a:78,tags:["day"],why:"등대해변 바로 앞. 크림브륄레 비스코티가 대표 메뉴.",hours:"11:00–18:00 · 수요일 휴무",check:["영업시간","거리"]},
-      {id:"c5",area:"고성",name:"소울브릿지",q:"고성 소울브릿지",ring:2,a:98,tags:["day","dusk"],why:"바다와 설악산이 함께 보이는 4층 대형 브런치 카페.",check:["주소","영업시간"]},
-      {id:"c6",area:"속초",name:"칠성조선소",q:"속초 칠성조선소",ring:2,a:118,tags:["day","dusk"],why:"선박 레일과 청초호 전망을 살린 카페.",check:["주소","영업시간","거리"]},
-      {id:"c7",area:"고성",name:"태시트",q:"고성 태시트 청간정길",ring:3,a:82,tags:["day"],why:"하얀 외관에 통창 너머로 동해가 펼쳐지는 카페. 태시트 라떼가 대표예요.",check:["영업시간","거리"]},
-      {id:"c8",area:"고성",name:"노메드",q:"고성 노메드 카페 청간정길",ring:3,a:95,tags:["day","dusk"],why:"청간해변이 바로 보이는 라탄 인테리어 카페. 주말보다 평일이 한적해요.",check:["영업시간(자료마다 상이)","거리"]},
-      {id:"c9",area:"고성",name:"아야트커피",q:"고성 아야트커피",ring:3,a:107,tags:["day","dusk"],why:"아야진해변이 내려다보이는 2층 루프탑 카페.",hours:"10:00–19:00 (라스트오더 18:30)",check:["영업시간","거리"]},
-      {id:"c10",area:"양양",name:"마할로 죽도",q:"양양 마할로 죽도",ring:4,a:-92,tags:["day"],why:"2층 카페에 루프탑이 있는 죽도해변 카페.",hours:"10:00–19:00",check:["영업시간","거리(30분 초과 가능)"]}
+      {id:"c1",area:"속초",name:"어느멋진날 카페",q:"어느멋진날 속초",ring:1,a:30,tags:["day","dusk"],why:"창밖으로 대관람차가 보이는 3층 카페.",check:["거리"]},
+      {id:"c2",area:"속초",name:"옥란푸딩",q:"속초 옥란푸딩",ring:1,a:-10,tags:["day"],why:"감자·두부·밤 푸딩과 타르트. 가볍게 들르기 좋아요.",check:["주소"]},
+      {id:"c3",area:"속초",name:"셜터 SHLTR",q:"속초 셜터 SHLTR",ring:2,a:58,tags:["day","dusk"],why:"블랙 인테리어에 통창 바다 뷰. 3층이 가장 인기예요.",check:["거리"]},
+      {id:"c4",area:"속초",name:"커피해요",q:"속초 커피해요",ring:2,a:78,tags:["day"],why:"등대해변 바로 앞. 크림브륄레 비스코티가 대표 메뉴.",check:["거리"]},
+      {id:"c5",area:"고성",name:"소울브릿지",q:"고성 소울브릿지",ring:2,a:98,tags:["day","dusk"],why:"바다와 설악산이 함께 보이는 4층 대형 브런치 카페.",check:["주소"]},
+      {id:"c6",area:"속초",name:"칠성조선소",q:"속초 칠성조선소",ring:2,a:118,tags:["day","dusk"],why:"선박 레일과 청초호 전망을 살린 카페.",check:["주소","거리"]},
+      {id:"c7",area:"고성",name:"태시트",q:"고성 태시트 청간정길",ring:3,a:82,tags:["day"],why:"하얀 외관에 통창 너머로 동해가 펼쳐지는 카페. 태시트 라떼가 대표예요.",check:["거리"]},
+      {id:"c8",area:"고성",name:"노메드",q:"고성 노메드 카페 청간정길",ring:3,a:95,tags:["day","dusk"],why:"청간해변이 바로 보이는 라탄 인테리어 카페. 주말보다 평일이 한적해요.",check:["거리"]},
+      {id:"c9",area:"고성",name:"아야트커피",q:"고성 아야트커피",ring:3,a:107,tags:["day","dusk"],why:"아야진해변이 내려다보이는 2층 루프탑 카페.",check:["거리"]},
+      {id:"c10",area:"양양",name:"마할로 죽도",q:"양양 마할로 죽도",ring:4,a:-92,tags:["day"],why:"2층 카페에 루프탑이 있는 죽도해변 카페.",check:["거리(30분 초과 가능)"]}
+    ],
+    move:[
+      {id:"m3",area:"속초",name:"이마트 속초점",q:"이마트 속초점",ring:1,dist:"도보 2분",a:195,tags:["dawn","day","dusk","night"],why:"생수·간식·세면용품을 한 번에 사는 대형마트. 호텔에서 가까워 잠깐 다녀오기 좋아요.",check:[]},
+      {id:"m1",area:"속초",name:"속초고속버스터미널",q:"속초고속버스터미널",ring:1,dist:"도보 5분",a:240,tags:["dawn","day","dusk","night"],why:"고속버스로 오가는 길의 시작점. 호텔에서 걸어갈 수 있어요.",check:[]},
+      {id:"m2",area:"속초",name:"속초시외버스터미널",q:"속초시외버스터미널",ring:2,a:145,tags:["dawn","day","dusk","night"],why:"중앙시장 가까이에 있는 시외버스터미널. 호텔에서는 걸어가기 멀어 택시나 시내버스가 편해요. 고속버스터미널과는 떨어져 있으니 타는 터미널을 미리 확인하세요.",check:["거리"]}
     ]
   };
 
@@ -394,27 +403,32 @@
     s9:{name:"Cheonggancheong Pavilion",why:"A seaside pavilion, one of the Eight Views of Gwandong, a famed set of scenic spots in Gangwon. Popular for sunrise."},
     s10:{name:"Ayajin Beach",why:"A beach facing the East Sea with Seoraksan behind it. A coastal trail past Seonang Rock runs alongside."},
     s11:{name:"Jukdo & Ingu Beaches",why:"Where surfers gather. Ingu Beach, right next to Jukdo, is a little more relaxed."},
-    f1:{name:"Sokcho Hangari Mulhoe",why:"A specialist in mulhoe (chilled raw-fish soup), right by the beach. Less crowded just after opening.",hours:"09:00–20:50 (Sat 21:20)"},
-    f2:{name:"Udongdang",why:"Bukkake udon with handmade noodles and local seafood. Expect a wait.",hours:"10:00–20:30"},
+    f1:{name:"Sokcho Hangari Mulhoe",why:"A specialist in mulhoe (chilled raw-fish soup), right by the beach."},
+    f2:{name:"Udongdang",why:"Bukkake udon with handmade noodles and local seafood. Expect a wait."},
     f3:{name:"Chunseonne",why:"Known for mulgomtang and gomchi soup (fish stews). Many reviews mention long morning waits."},
     f4:{name:"Mac Korea",why:"A Sokcho old-timer serving big pork cutlets since 1994."},
     f5:{name:"Mulchi Sikdang",why:"A local restaurant at Mulchi Port, on the Sokcho–Yangyang border. Known for mulhoe and braised flounder."},
-    f6:{name:"Dongmyeong-dong Potato Ongsimi",why:"Hand-shaped potato dumpling soup and potato pancakes. Open for lunch only.",hours:"Mon–Sat 10:00–15:00 · Closed Sun"},
+    f6:{name:"Dongmyeong-dong Potato Ongsimi",why:"Hand-shaped potato dumpling soup and potato pancakes."},
     f7:{name:"Bongpo Meoguri House",why:"Known for sea urchin rice and abalone mulhoe. The sea is right outside."},
-    f8:{name:"Ayajin Ttoollae",why:"A local Ayajin restaurant serving braised fish and gomchi soup. Opens at 7 a.m.",hours:"Mon–Sat 07:00–19:00 · Sun 07:00–14:30"},
-    f9:{name:"Naksan Beach Restaurant",why:"Korean home-style meals by Naksan Beach. Open from early morning to late evening.",hours:"07:30–22:00"},
-    f10:{name:"Baekchon Makguksu",why:"Only two dishes: buckwheat noodles in chilled dongchimi broth, and sliced boiled pork. Waits can reach 1–2 hours.",hours:"10:30–17:00 · Closed Wed"},
-    f11:{name:"Dongmyeong Port Pocha Street",why:"A street of pojangmacha (Korean street-style pubs) by the sea, serving seafood dishes and drinks. Many stay open from evening into the night; hours vary by stall."},
+    f8:{name:"Ayajin Ttoollae",why:"A local Ayajin restaurant serving braised fish and gomchi soup."},
+    f9:{name:"Naksan Beach Restaurant",why:"Korean home-style meals by Naksan Beach."},
+    f10:{name:"Baekchon Makguksu",why:"Only two dishes: buckwheat noodles in chilled dongchimi broth, and sliced boiled pork. Waits can reach 1–2 hours."},
+    f11:{name:"Dongmyeong Port Pocha Street",why:"A street of pojangmacha (Korean street-style pubs) by the sea, serving seafood dishes and drinks."},
+    f12:{name:"Dancheon Sikdang",why:"The best-known North Korean-style sundae (Korean blood sausage) restaurant in Abai Village. Many pair its abai sundae and squid sundae with seasoned raw pollack (myeongtae-hoe). Lines grow around lunch."},
+    f13:{name:"Sindasin",why:"A sundae-soup restaurant in Abai Village. Its garibap-style soup (galigukbap) and abai sundae soup are the usual orders. Waits build at lunch and dinner peaks."},
     c1:{name:"Eoneu Meotjin Nal Cafe",why:"A third-floor cafe where the Ferris wheel fills the window."},
     c2:{name:"Okran Pudding",why:"Potato, tofu and chestnut puddings and tarts. Easy to drop in."},
-    c3:{name:"SHLTR",why:"Black interior with floor-to-ceiling sea views. The third floor is the most popular.",hours:"09:30–20:00"},
-    c4:{name:"Coffee Haeyo",why:"Right in front of Deungdae Beach. Known for its crème brûlée biscotti.",hours:"11:00–18:00 · Closed Wed"},
+    c3:{name:"SHLTR",why:"Black interior with floor-to-ceiling sea views. The third floor is the most popular."},
+    c4:{name:"Coffee Haeyo",why:"Right in front of Deungdae Beach. Known for its crème brûlée biscotti."},
     c5:{name:"Soul Bridge",why:"A large four-floor brunch cafe with views of both the sea and Seoraksan."},
     c6:{name:"Chilseong Shipyard",why:"A cafe built around old ship rails, with views of Cheongchoho Lake."},
     c7:{name:"Tacit",why:"A white building with big windows facing the East Sea. Known for the Tacit latte."},
     c8:{name:"Nomad",why:"A rattan-style cafe facing Cheonggan Beach. Quieter on weekdays than weekends."},
-    c9:{name:"Ayatt Coffee",why:"A second-floor rooftop cafe overlooking Ayajin Beach.",hours:"10:00–19:00 (last order 18:30)"},
-    c10:{name:"Mahalo Jukdo",why:"A second-floor cafe with a rooftop, by Jukdo Beach.",hours:"10:00–19:00"}
+    c9:{name:"Ayatt Coffee",why:"A second-floor rooftop cafe overlooking Ayajin Beach."},
+    c10:{name:"Mahalo Jukdo",why:"A second-floor cafe with a rooftop, by Jukdo Beach."},
+    m1:{name:"Sokcho Express Bus Terminal",dist:"5 min walk",why:"Where express buses come and go. Within walking distance of the hotel."},
+    m2:{name:"Sokcho Intercity Bus Terminal",why:"Near Jungang Market. Too far to walk from the hotel, so a taxi or city bus is easier. It is not next to the express bus terminal, so check which terminal your bus uses."},
+    m3:{name:"E-mart Sokcho",dist:"2 min walk",why:"A large supermarket for water, snacks and toiletries. Close to the hotel, so it is easy to pop over."}
   };
 
 
@@ -430,27 +444,32 @@
     s9:{name:"清涧亭",why:"面朝大海的凉亭，是江原道名胜“关东八景”之一，不少人来此看日出。"},
     s10:{name:"Ayajin 海水浴场",why:"背靠雪岳山、面朝东海的海滩，旁边有沿着海岸的步道。"},
     s11:{name:"竹岛·Ingu 海滩",why:"冲浪者聚集的海滩。紧邻竹岛的 Ingu 海滩更为宁静。"},
-    f1:{name:"束草 Hangari 冷生鱼汤",why:"海滩前的冷生鱼片汤（물회）专门店，刚开门时人比较少。",hours:"09:00–20:50（周六至21:20）"},
-    f2:{name:"Udongdang 乌冬",why:"手工揉制的面条配束草海鲜的浇汁乌冬，请预留排队时间。",hours:"10:00–20:30"},
+    f1:{name:"束草 Hangari 冷生鱼汤",why:"海滩前的冷生鱼片汤（물회）专门店。"},
+    f2:{name:"Udongdang 乌冬",why:"手工揉制的面条配束草海鲜的浇汁乌冬，请预留排队时间。"},
     f3:{name:"Chunseonne",why:"以 mulgomtang、gomchi 等鱼汤闻名的店，不少评价提到上午排队很久。"},
     f4:{name:"Mac Korea 猪排",why:"1994年起营业的束草老字号，主打大份炸猪排。"},
     f5:{name:"Mulchi 食堂",why:"位于束草与襄阳交界的 Mulchi 港的当地食堂，冷生鱼汤和炖鲽鱼是招牌。"},
-    f6:{name:"东明洞土豆丸子汤",why:"用生土豆手工捏成的丸子汤和土豆饼，只在午间营业。",hours:"周一至周六 10:00–15:00 · 周日休息"},
+    f6:{name:"东明洞土豆丸子汤",why:"用生土豆手工捏成的丸子汤和土豆饼。"},
     f7:{name:"Bongpo Meoguri 之家",why:"以海胆饭和鲍鱼冷生鱼汤闻名，门前就是大海。"},
-    f8:{name:"Ayajin Ttoollae",why:"Ayajin 当地人常去的食堂，供应炖鱼和 gomchi 鱼汤，早上7点就开门。",hours:"周一至周六 07:00–19:00 · 周日 07:00–14:30"},
-    f9:{name:"洛山海边食堂",why:"洛山海滩前的韩式家常菜，从清晨营业到深夜。",hours:"07:30–22:00"},
-    f10:{name:"Baekchon 荞麦冷面",why:"只有荞麦冷面和水煮猪肉片两样，汤底是冰凉的萝卜水泡菜。排队可能长达1–2小时。",hours:"10:30–17:00 · 周三休息"},
-    f11:{name:"东明港布帐马车街",why:"海边的“布帐马车”（韩式路边小酒馆）街，可以一边看海一边享用海鲜下酒菜。多数店铺从傍晚营业到深夜，各家营业时间不同。"},
+    f8:{name:"Ayajin Ttoollae",why:"Ayajin 当地人常去的食堂，供应炖鱼和 gomchi 鱼汤。"},
+    f9:{name:"洛山海边食堂",why:"洛山海滩前的韩式家常菜。"},
+    f10:{name:"Baekchon 荞麦冷面",why:"只有荞麦冷面和水煮猪肉片两样，汤底是冰凉的萝卜水泡菜。排队可能长达1–2小时。"},
+    f11:{name:"东明港布帐马车街",why:"海边的“布帐马车”（韩式路边小酒馆）街，可以一边看海一边享用海鲜下酒菜。"},
+    f12:{name:"Dancheon 食堂",why:"阿爸村（Abai Village）最具代表性的朝鲜半岛北部风味血肠店。许多人把阿爸血肠和鱿鱼血肠搭配拌明太鱼生鱼片（명태회무침）一起吃。中午前后排队较长。"},
+    f13:{name:"Sindasin",why:"阿爸村的血肠汤饭店。常点的是 galibap 汤饭和阿爸血肠汤饭。午餐和晚餐高峰时需要排队。"},
     c1:{name:"Eoneu Meotjin Nal 咖啡馆",why:"三楼咖啡馆，窗外就是摩天轮。"},
     c2:{name:"Okran Pudding",why:"有土豆、豆腐、栗子口味的布丁和挞，顺路进去很方便。"},
-    c3:{name:"SHLTR",why:"黑色内饰配落地窗海景，三楼最受欢迎。",hours:"09:30–20:00"},
-    c4:{name:"Coffee Haeyo",why:"就在灯塔海滩前，招牌是焦糖布蕾饼干。",hours:"11:00–18:00 · 周三休息"},
+    c3:{name:"SHLTR",why:"黑色内饰配落地窗海景，三楼最受欢迎。"},
+    c4:{name:"Coffee Haeyo",why:"就在灯塔海滩前，招牌是焦糖布蕾饼干。"},
     c5:{name:"Soul Bridge",why:"可同时望见大海和雪岳山的四层大型早午餐咖啡馆。"},
     c6:{name:"七星造船厂咖啡馆",why:"以旧船轨和青草湖景色为特色的咖啡馆。"},
     c7:{name:"Tacit",why:"白色外观，大窗外是东海。招牌是 Tacit 拿铁。"},
     c8:{name:"Nomad",why:"藤编风格的咖啡馆，正对清涧海滩，平日比周末清静。"},
-    c9:{name:"Ayatt Coffee",why:"二楼屋顶露台咖啡馆，可俯瞰 Ayajin 海滩。",hours:"10:00–19:00（最后点单18:30）"},
-    c10:{name:"Mahalo Jukdo",why:"竹岛海滩旁的二楼咖啡馆，带露台。",hours:"10:00–19:00"}
+    c9:{name:"Ayatt Coffee",why:"二楼屋顶露台咖啡馆，可俯瞰 Ayajin 海滩。"},
+    c10:{name:"Mahalo Jukdo",why:"竹岛海滩旁的二楼咖啡馆，带露台。"},
+    m1:{name:"束草高速巴士客运站",dist:"步行5分钟",why:"乘坐高速巴士往返的起点。从酒店步行即可到达。"},
+    m2:{name:"束草市外巴士客运站",why:"位于中央市场附近。从酒店步行较远，乘出租车或市内公交更方便。它与高速巴士客运站不在一起，请提前确认乘车的客运站。"},
+    m3:{name:"E-mart 束草店",dist:"步行2分钟",why:"可一次买齐矿泉水、零食和洗漱用品的大型超市。离酒店很近，随时可以去逛逛。"}
   };
 
   var JA = {
@@ -465,27 +484,32 @@
     s9:{name:"清澗亭（チョンガンジョン）",why:"江原道を代表する景勝地「関東八景」のひとつで、海に面した東屋。日の出を見に訪れる人が多い場所です。"},
     s10:{name:"アヤジン海水浴場",why:"雪岳山を背にして東海に面するビーチ。隣には海沿いの遊歩道が続きます。"},
     s11:{name:"竹島・イングビーチ",why:"サーファーが集まるビーチ。竹島のすぐ隣のイングビーチは少しゆったりしています。"},
-    f1:{name:"束草 ハンガリ・ムルフェ",why:"ビーチ前のムルフェ（冷たい刺身スープ）専門店。開店直後が比較的空いています。",hours:"09:00–20:50（土曜は21:20まで）"},
-    f2:{name:"ウドンダン",why:"手打ち麺に束草の海鮮をのせたぶっかけうどん。待ち時間を見込んでください。",hours:"10:00–20:30"},
+    f1:{name:"束草 ハンガリ・ムルフェ",why:"ビーチ前のムルフェ（冷たい刺身スープ）専門店。"},
+    f2:{name:"ウドンダン",why:"手打ち麺に束草の海鮮をのせたぶっかけうどん。待ち時間を見込んでください。"},
     f3:{name:"チュンソンネ",why:"魚の鍋・スープ（ムルゴムタン、ゴムチクッ）で知られる店。午前中の行列が長いという口コミが多いです。"},
     f4:{name:"マックコリア（とんかつ）",why:"1994年から続く束草の老舗。特大とんかつが名物です。"},
     f5:{name:"ムルチ食堂",why:"束草と襄陽の境にあるムルチ港の地元食堂。ムルフェとカレイの煮付けが名物です。"},
-    f6:{name:"東明洞 じゃがいもオンシミ",why:"生のじゃがいもで作るお団子スープ（オンシミ）とじゃがいもチヂミ。ランチのみ営業です。",hours:"月〜土 10:00–15:00 · 日曜定休"},
+    f6:{name:"東明洞 じゃがいもオンシミ",why:"生のじゃがいもで作るお団子スープ（オンシミ）とじゃがいもチヂミ。"},
     f7:{name:"ボンポ・モグリの店",why:"ウニごはんとアワビのムルフェで知られる店。目の前が海です。"},
-    f8:{name:"アヤジン ットオルレ",why:"アヤジンの地元食堂。魚の煮付けとゴムチ（魚）のスープが名物で、朝7時から開いています。",hours:"月〜土 07:00–19:00 · 日 07:00–14:30"},
-    f9:{name:"洛山ビーチ食堂",why:"洛山ビーチ前の韓国家庭料理。早朝から夜遅くまで営業しています。",hours:"07:30–22:00"},
-    f10:{name:"ペクチョン マッククス",why:"メニューはそば冷麺とゆで豚の2品だけ。冷たい大根の水キムチ（トンチミ）スープが決め手で、待ち時間は1〜2時間になることも。",hours:"10:30–17:00 · 水曜定休"},
-    f11:{name:"東明港のポジャンマチャ通り",why:"海沿いに並ぶポジャンマチャ（韓国式の屋台風居酒屋）の通り。海鮮のおつまみでお酒を楽しめます。夕方から夜遅くまで営業する店が多いですが、営業時間は店ごとに異なります。"},
+    f8:{name:"アヤジン ットオルレ",why:"アヤジンの地元食堂。魚の煮付けとゴムチ（魚）のスープが名物でです。"},
+    f9:{name:"洛山ビーチ食堂",why:"洛山ビーチ前の韓国家庭料理。"},
+    f10:{name:"ペクチョン マッククス",why:"メニューはそば冷麺とゆで豚の2品だけ。冷たい大根の水キムチ（トンチミ）スープが決め手で、待ち時間は1〜2時間になることも。"},
+    f11:{name:"東明港のポジャンマチャ通り",why:"海沿いに並ぶポジャンマチャ（韓国式の屋台風居酒屋）の通り。海鮮のおつまみでお酒を楽しめます。"},
+    f12:{name:"タンチョン食堂",why:"アバイ村を代表する北朝鮮風スンデ（韓国式の腸詰め）の店。アバイスンデやイカスンデに、味付けしたスケトウダラの刺身（明太フェ）を添えて食べる人が多いです。昼どきは行列が長くなります。"},
+    f13:{name:"シンダシン",why:"アバイ村のスンデクッパの店。カリクッパ（牛骨スープのごはん）とアバイスンデクッパがよく注文されます。昼と夕方のピーク時は待ち時間が出ます。"},
     c1:{name:"オヌ・モッチン・ナル カフェ",why:"3階のカフェ。窓いっぱいに大観覧車が見えます。"},
     c2:{name:"オクラン・プリン",why:"じゃがいも・豆腐・栗のプリンとタルト。気軽に立ち寄れます。"},
-    c3:{name:"SHLTR",why:"ブラックの内装と大きな窓の海景。3階が一番人気です。",hours:"09:30–20:00"},
-    c4:{name:"コーヒーヘヨ",why:"灯台ビーチの目の前。クレームブリュレのビスコッティが名物です。",hours:"11:00–18:00 · 水曜定休"},
+    c3:{name:"SHLTR",why:"ブラックの内装と大きな窓の海景。3階が一番人気です。"},
+    c4:{name:"コーヒーヘヨ",why:"灯台ビーチの目の前。クレームブリュレのビスコッティが名物です。"},
     c5:{name:"ソウルブリッジ",why:"海と雪岳山の両方が見える4階建ての大型ブランチカフェ。"},
     c6:{name:"七星造船所カフェ",why:"古い船のレールと青草湖の眺めを生かしたカフェ。"},
     c7:{name:"テシット",why:"白い外観に大きな窓の向こうは東海。テシット・ラテが看板メニューです。"},
     c8:{name:"ノマド",why:"ラタン調のカフェで、チョンガン海岸が目の前。週末より平日が静かです。"},
-    c9:{name:"アヤット・コーヒー",why:"アヤジンビーチを見下ろす2階のルーフトップカフェ。",hours:"10:00–19:00（ラストオーダー18:30）"},
-    c10:{name:"マハロ 竹島",why:"竹島ビーチそばの2階カフェ。ルーフトップもあります。",hours:"10:00–19:00"}
+    c9:{name:"アヤット・コーヒー",why:"アヤジンビーチを見下ろす2階のルーフトップカフェ。"},
+    c10:{name:"マハロ 竹島",why:"竹島ビーチそばの2階カフェ。ルーフトップもあります。"},
+    m1:{name:"束草高速バスターミナル",dist:"徒歩5分",why:"高速バスの発着ターミナル。ホテルから歩いて行けます。"},
+    m2:{name:"束草市外バスターミナル",why:"中央市場の近くにあります。ホテルから歩くには遠いので、タクシーか市内バスが便利です。高速バスターミナルとは離れているため、乗るターミナルを事前にご確認ください。"},
+    m3:{name:"イーマート束草店",dist:"徒歩2分",why:"水・お菓子・洗面用品をまとめて買える大型スーパー。ホテルから近く、気軽に立ち寄れます。"}
   };
 
   var TX = {en:EN, zh:ZH, ja:JA};
@@ -493,7 +517,7 @@
   var LANG_LABEL = {ko:"한국어", en:"EN", zh:"中文", ja:"日本語"};
 
   var TIME_KEYS = ["dawn","day","dusk","night"];
-  var CAT_KEYS = ["spot","food","cafe"];
+  var CAT_KEYS = ["spot","food","cafe","move"];
   var AREA_KEYS = ["all","속초","양양","고성"];
 
   var L = {
@@ -505,13 +529,13 @@
       sea:"동해", north:"고성 방면", south:"양양 방면", hotel:"호텔",
       r1:"도보 10분", r2:"차 10분", r3:"차 20분", r4:"차 30분",
       cap:"방향과 거리는 대략적인 개념도예요. 정확한 위치와 이동 시간은 아래 지도 링크에서 확인하세요.",
-      foot1:"영업시간과 휴무일은 수시로 바뀝니다. 출발 전에 지도 앱에서 한 번 더 확인해 주세요.",
       foot2:"이동 시간은 도로와 시간대에 따라 달라집니다. 양양과 고성 방면은 주말과 성수기에 더 걸릴 수 있어요.",
       foot3:"구글지도의 길찾기는 국내에서 제한될 수 있어요. 네이버지도와 카카오맵도 함께 연결했어요.",
       foot4:"",
       ariaTimes:"시간대 선택", ariaMap:"호텔 기준 거리 개념도", ariaCats:"카테고리", ariaAreas:"지역 선택",
       now:"지금",
-      cats:{spot:"가볼 곳",food:"맛집",cafe:"카페"},
+      notice:"영업시간과 휴무일은 싣지 않았어요. 가기 전에 지도 링크에서 전화번호를 확인해 직접 문의해 주세요.",
+      cats:{spot:"가볼 곳",food:"맛집",cafe:"카페",move:"이동·장보기"},
       areas:{all:"전체","속초":"속초","양양":"양양","고성":"고성"},
       times:{dawn:["새벽","해 뜰 무렵"],day:["낮","낮 시간"],dusk:["일몰","해 질 무렵"],night:["밤","밤 시간"]},
       ring:{1:"도보 10분 이내",2:"차로 10분 안팎",3:"차로 20분 안팎",4:"차로 30분 안팎"},
@@ -520,10 +544,10 @@
       noteNone:function(phrase){ return phrase + "에 특별히 권하는 곳은 없어요. 다른 시간대를 눌러보세요."; },
       noteEmptyArea:"이 지역에는 아직 소개해 드리는 곳이 없어요. 다른 지역을 눌러보세요.",
       empty:{
-        food:{dawn:"이른 시간에 문을 여는 식당은 드물어요. 대부분 오전 9~10시에 시작해요.",
-              night:"밤에는 문 연 식당이 적어요. 저녁 영업은 8시 전후에 끝나는 곳이 많으니 일찍 다녀오세요."},
-        cafe:{dawn:"카페는 대부분 오전 9시 반 이후에 문을 열어요.",
-              night:"카페는 대체로 저녁 8시 전에 닫아요. 밤에는 ‘가볼 곳’에서 해변 산책을 골라보세요."}
+        food:{dawn:"이 시간대에 어울리는 식당은 아직 소개하지 않았어요. 다른 시간대를 눌러보세요.",
+              night:"이 시간대에 어울리는 식당은 아직 소개하지 않았어요. 다른 시간대를 눌러보세요."},
+        cafe:{dawn:"이 시간대에 어울리는 카페는 아직 소개하지 않았어요. 다른 시간대를 눌러보세요.",
+              night:"이 시간대에 어울리는 카페는 아직 소개하지 않았어요. 밤에는 ‘가볼 곳’에서 해변 산책을 골라보세요."}
       },
       pinAria:function(i, name, on){ return i + "번 " + name + (on ? ", 지금 시간대에 어울려요" : ""); }
     },
@@ -535,13 +559,13 @@
       sea:"East Sea", north:"To Goseong", south:"To Yangyang", hotel:"Hotel",
       r1:"10 min walk", r2:"10 min drive", r3:"20 min drive", r4:"30 min drive",
       cap:"Directions and distances are approximate. Use the map links below for exact locations and travel times.",
-      foot1:"Opening hours and closing days change often. Please check in your map app before you go.",
       foot2:"Travel times vary with traffic and season. Yangyang and Goseong can take longer on weekends and in peak season.",
       foot3:"Turn-by-turn directions in Google Maps may be limited in Korea. Naver Map and Kakao Map links are provided too.",
       foot4:"This page is translated from Korean. Some expressions may sound unnatural. If anything is unclear, please refer to the Korean original.",
       ariaTimes:"Time of day", ariaMap:"Distance sketch from the hotel", ariaCats:"Category", ariaAreas:"Area",
       now:"Now",
-      cats:{spot:"Sights",food:"Food",cafe:"Cafes"},
+      notice:"We do not list opening hours or closing days. Before you go, find the phone number through the map links and call to check.",
+      cats:{spot:"Sights",food:"Food",cafe:"Cafes",move:"Getting around"},
       areas:{all:"All","속초":"Sokcho","양양":"Yangyang","고성":"Goseong"},
       times:{dawn:["Dawn","around sunrise"],day:["Day","during the day"],dusk:["Dusk","around sunset"],night:["Night","at night"]},
       ring:{1:"Within a 10 min walk",2:"About 10 min by car",3:"About 20 min by car",4:"About 30 min by car"},
@@ -550,10 +574,10 @@
       noteNone:function(phrase){ return "Nothing special to recommend " + phrase + ". Try another time of day."; },
       noteEmptyArea:"Nothing listed for this area yet. Try another area.",
       empty:{
-        food:{dawn:"Few restaurants open this early. Most start between 9 and 10 a.m.",
-              night:"Few restaurants are open at night. Many close around 8 p.m., so go early for dinner."},
-        cafe:{dawn:"Most cafes open after 9:30 a.m.",
-              night:"Most cafes close before 8 p.m. For the night, try a beach walk under Sights."}
+        food:{dawn:"We haven't listed a restaurant for this time of day yet. Try another time.",
+              night:"We haven't listed a restaurant for this time of day yet. Try another time."},
+        cafe:{dawn:"We haven't listed a cafe for this time of day yet. Try another time.",
+              night:"We haven't listed a cafe for this time of day yet. For the night, try a beach walk under Sights."}
       },
       pinAria:function(i, name, on){ return i + ". " + name + (on ? ", suits this time of day" : ""); }
     }
@@ -568,13 +592,13 @@
     sea:"东海", north:"往高城", south:"往襄阳", hotel:"酒店",
     r1:"步行10分钟", r2:"车程10分钟", r3:"车程20分钟", r4:"车程30分钟",
     cap:"方向与距离仅为大致示意。准确位置和所需时间请通过下方地图链接确认。",
-    foot1:"营业时间和休息日经常变动，出发前请在地图应用中再确认一次。",
     foot2:"所需时间会因路况和季节而异。周末和旺季前往襄阳、高城可能需要更长时间。",
     foot3:"谷歌地图在韩国的导航功能可能受限，我们同时提供了 Naver Map 和 Kakao Map 链接。",
       foot4:"本页内容由韩语翻译而成，部分表述可能不够自然。如有疑问，请以韩语原文为准。",
     ariaTimes:"选择时段", ariaMap:"以酒店为基准的距离示意图", ariaCats:"分类", ariaAreas:"选择地区",
     now:"现在",
-    cats:{spot:"景点",food:"美食",cafe:"咖啡馆"},
+    notice:"本页不列出营业时间和休息日。出发前请通过地图链接查找电话号码，直接致电确认。",
+    cats:{spot:"景点",food:"美食",cafe:"咖啡馆",move:"交通·购物"},
     areas:{all:"全部","속초":"束草","양양":"襄阳","고성":"高城"},
     times:{dawn:["清晨","日出前后"],day:["白天","白天"],dusk:["日落","日落前后"],night:["夜晚","夜间"]},
     ring:{1:"步行10分钟以内",2:"车程约10分钟",3:"车程约20分钟",4:"车程约30分钟"},
@@ -583,10 +607,10 @@
     noteNone:function(phrase){ return "暂时没有特别适合" + phrase + "的推荐。请试试其他时段。"; },
     noteEmptyArea:"该地区暂无推荐。请选择其他地区。",
     empty:{
-      food:{dawn:"这么早营业的餐厅不多，大多从上午9点到10点开始营业。",
-            night:"夜间营业的餐厅很少，不少店在晚上8点左右打烊，请早些用餐。"},
-      cafe:{dawn:"咖啡馆大多在上午9点半以后开门。",
-            night:"咖啡馆大多在晚上8点前关门。夜晚不妨在“景点”里选一处海边散步。"}
+      food:{dawn:"暂时没有适合这个时段的餐厅推荐。请试试其他时段。",
+            night:"暂时没有适合这个时段的餐厅推荐。请试试其他时段。"},
+      cafe:{dawn:"暂时没有适合这个时段的咖啡馆推荐。请试试其他时段。",
+            night:"暂时没有适合这个时段的咖啡馆推荐。夜晚不妨在“景点”里选一处海边散步。"}
     },
     pinAria:function(i, name, on){ return i + "号 " + name + (on ? "，适合此时段" : ""); }
   };
@@ -598,13 +622,13 @@
     sea:"東海", north:"高城方面", south:"襄陽方面", hotel:"ホテル",
     r1:"徒歩10分", r2:"車で10分", r3:"車で20分", r4:"車で30分",
     cap:"方角と距離はおおよそのイメージです。正確な場所と所要時間は下の地図リンクでご確認ください。",
-    foot1:"営業時間や定休日は頻繁に変わります。出発前に地図アプリでもう一度ご確認ください。",
     foot2:"所要時間は道路状況や時期によって変わります。襄陽・高城方面は週末や繁忙期に時間がかかることがあります。",
     foot3:"韓国ではGoogleマップの経路案内が制限される場合があります。Naver MapとKakao Mapのリンクも用意しています。",
       foot4:"このページは韓国語から翻訳したもので、不自然な表現が含まれる場合があります。ご不明な点は韓国語の原文をご確認ください。",
     ariaTimes:"時間帯を選ぶ", ariaMap:"ホテルからの距離イメージ図", ariaCats:"カテゴリ", ariaAreas:"エリアを選ぶ",
     now:"今",
-    cats:{spot:"見どころ",food:"グルメ",cafe:"カフェ"},
+    notice:"営業時間と定休日は掲載していません。お出かけ前に、地図リンクで電話番号を確認し、直接お問い合わせください。",
+    cats:{spot:"見どころ",food:"グルメ",cafe:"カフェ",move:"移動・買い物"},
     areas:{all:"すべて","속초":"束草","양양":"襄陽","고성":"高城"},
     times:{dawn:["早朝","日の出のころ"],day:["昼","昼の時間帯"],dusk:["夕暮れ","日没のころ"],night:["夜","夜の時間帯"]},
     ring:{1:"徒歩10分以内",2:"車で約10分",3:"車で約20分",4:"車で約30分"},
@@ -613,10 +637,10 @@
     noteNone:function(phrase){ return phrase + "に特におすすめの場所はありません。別の時間帯をお試しください。"; },
     noteEmptyArea:"このエリアにはまだ掲載がありません。別のエリアをお選びください。",
     empty:{
-      food:{dawn:"早い時間に開いている飲食店は多くありません。多くは午前9〜10時から営業します。",
-            night:"夜に開いている飲食店は少なめです。夜8時ごろに閉まる店が多いので、早めにどうぞ。"},
-      cafe:{dawn:"カフェの多くは午前9時半以降に開きます。",
-            night:"カフェの多くは夜8時前に閉まります。夜は「見どころ」から海辺の散歩を選んでみてください。"}
+      food:{dawn:"この時間帯におすすめの飲食店はまだ掲載していません。別の時間帯をお試しください。",
+            night:"この時間帯におすすめの飲食店はまだ掲載していません。別の時間帯をお試しください。"},
+      cafe:{dawn:"この時間帯におすすめのカフェはまだ掲載していません。別の時間帯をお試しください。",
+            night:"この時間帯におすすめのカフェはまだ掲載していません。夜は「見どころ」から海辺の散歩を選んでみてください。"}
     },
     pinAria:function(i, name, on){ return i + "番 " + name + (on ? "、この時間帯におすすめ" : ""); }
   };
@@ -653,7 +677,6 @@
     return {
       name: tr && tr.name ? tr.name : p.name,
       why: tr && tr.why ? tr.why : p.why,
-      hours: tr && tr.hours ? tr.hours : p.hours,
       dist: tr && tr.dist ? tr.dist : (state.lang === "ko" ? p.dist : null)
     };
   }
@@ -828,7 +851,6 @@
       body.appendChild(h);
       if (state.lang !== "ko") body.appendChild(el("p", {"class":"koname", lang:"ko"}, p.name));
       body.appendChild(el("p", {"class":"why"}, tx.why));
-      if (tx.hours) body.appendChild(el("p", {"class":"hours"}, tx.hours));
       var links = el("div", {"class":"links"});
       t.linkOrder.forEach(function(lk){
         links.appendChild(el("a", {href:mapHref(lk[0], p.q), target:"_blank", rel:"noopener noreferrer"}, lk[1]));
