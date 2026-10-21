@@ -229,10 +229,8 @@
   .why{margin:4px 0 0}
   .links{margin:4px 0 0;display:flex;gap:6px;font-size:15px;flex-wrap:wrap}
   .links a{color:var(--ink);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px;padding:0 8px 0 0}
-  .check{margin:8px 0 0;font-size:12.5px;color:var(--glow-ink);background:var(--glow);display:inline-block;padding:2px 8px;border-radius:4px}
+  .confirm{margin:6px 0 0;padding:6px 10px;border-radius:4px;background:var(--panel);color:var(--ink);font-size:14px}
   .notice{margin:18px 0 6px;padding:10px 12px;border-left:3px solid var(--glow);border-radius:4px;background:var(--panel);color:var(--ink);font-size:15px}
-  .reviewbar{display:none;background:var(--glow);color:var(--glow-ink);font-size:13px;padding:6px 10px;border-radius:6px;margin:0 0 16px}
-  .review .reviewbar{display:block}
 
   .foot{margin:26px 0 0;font-size:14px;color:var(--muted)}
   .foot p{margin:0 0 6px}
@@ -697,7 +695,6 @@
   </div>
   <h1 data-i18n="h1"></h1>
   <p class="lede" data-i18n="lede"></p>
-  <div class="reviewbar">검수 모드 · 주황색 라벨은 게시 전 확인이 필요한 항목입니다.</div>
 
   <div class="times" role="group" id="times"></div>
   <p class="note" id="note" aria-live="polite"></p>
@@ -749,7 +746,7 @@
      a: 개념도 방위각(°, 동=0, 북=90, 남=-90)
      tags: 어울리는 시간대(에디토리얼 판단, 실시간 영업 여부 아님)
      영업시간·휴무일은 싣지 않음(방문 전 직접 문의 안내). 시간 정보를 다시 넣지 말 것
-     check: 게시 전 확인 필요 항목(검수 모드 전용)
+     check: 내부 확인 메모(화면에 표시하지 않음) / confirm: true = 게스트에게 출발 전 직접 확인 안내를 표시
      q: 지도 검색어(한국어 상호가 검색 정확도가 높아 영문판에서도 그대로 사용)
      ------------------------------------------------------------------ */
   var PLACES = {
@@ -765,8 +762,8 @@
       {id:"s9",area:"고성",name:"청간정",q:"고성 청간정",ring:3,a:84,tags:["dawn","day"],why:"바다를 마주한 관동팔경의 정자. 일출을 보러 오는 사람이 많아요.",check:["거리"]},
       {id:"s10",area:"고성",name:"아야진해수욕장",q:"아야진해수욕장",ring:3,a:98,tags:["day","dusk"],why:"설악산을 뒤에 두고 동해를 마주하는 해변. 옆으로 서낭바위 산책로가 이어져요.",check:["거리"]},
       {id:"s11",area:"양양",name:"죽도해변·인구해변",q:"양양 죽도해변",ring:4,a:-95,tags:["day","dusk"],why:"서퍼들이 모이는 해변. 죽도 바로 옆 인구해변은 조금 더 여유로워요.",check:["거리(30분 초과 가능)"]},
-      {id:"s12",area:"양양",name:"하조대",q:"양양 하조대",ring:4,a:-72,tags:["dawn","day"],why:"기암괴석과 소나무 숲 위에 선 양양 10경 정자. 절벽 위 노송 '애국송'과 아래쪽 기사문 등대가 함께 보여요.",check:["거리(30분 안팎)"]},
-      {id:"s13",area:"고성",name:"송지호",q:"고성 송지호",ring:4,a:90,tags:["day","dusk"],why:"설악산 울산바위가 보이는 둘레 약 6km의 석호. 관망타워에서 호수를 내려다보고, 5.2km 호숫길을 걸을 수 있어요.",check:["거리(30분 초과 가능)"]}
+      {id:"s12",area:"양양",name:"하조대",q:"양양 하조대",ring:4,a:-72,tags:["dawn","day"],why:"기암괴석과 소나무 숲 위에 선 양양 10경 정자. 절벽 위 노송 '애국송'과 아래쪽 기사문 등대가 함께 보여요.",check:["거리(30분 안팎)"],confirm:true},
+      {id:"s13",area:"고성",name:"송지호",q:"고성 송지호",ring:4,a:90,tags:["day","dusk"],why:"설악산 울산바위가 보이는 둘레 약 6km의 석호. 관망타워에서 호수를 내려다보고, 5.2km 호숫길을 걸을 수 있어요.",check:["거리(30분 초과 가능)"],confirm:true}
     ],
     food:[
       {id:"f1",area:"속초",name:"속초항아리물회",q:"속초항아리물회",ring:1,a:-25,tags:["day","dusk"],why:"해수욕장 앞 물회 전문점.",check:["거리"]},
@@ -794,8 +791,8 @@
       {id:"c8",area:"고성",name:"노메드",q:"고성 노메드 카페 청간정길",ring:3,a:95,tags:["day","dusk"],why:"청간해변이 바로 보이는 라탄 인테리어 카페. 주말보다 평일이 한적해요.",check:["거리"]},
       {id:"c9",area:"고성",name:"아야트커피",q:"고성 아야트커피",ring:3,a:107,tags:["day","dusk"],why:"아야진해변이 내려다보이는 2층 루프탑 카페.",check:["거리"]},
       {id:"c10",area:"양양",name:"마할로 죽도",q:"양양 마할로 죽도",ring:4,a:-92,tags:["day"],why:"2층 카페에 루프탑이 있는 죽도해변 카페.",check:["거리(30분 초과 가능)"]},
-      {id:"c11",area:"고성",name:"커피고",q:"고성 커피고 봉포",ring:3,a:70,tags:["day","dusk"],why:"봉포해수욕장 앞 로스터리 카페. 직접 로스팅한 스페셜티 원두와 유기농 베이커리가 있어요. 가격대는 높은 편이라는 후기가 있어요.",check:["거리","주소"]},
-      {id:"c12",area:"고성",name:"스위밍 터틀",q:"고성 스위밍 터틀 아야진",ring:3,a:119,tags:["dawn","day"],why:"아야진해수욕장이 내려다보이는 3층 독채 카페. 옥상 좌석이 있고, 1층은 철조망이 보인다는 후기가 있어 위층이 나아요.",check:["거리","주소"]},
+      {id:"c11",area:"고성",name:"커피고",q:"고성 커피고 봉포",ring:3,a:70,tags:["day","dusk"],why:"봉포해수욕장 앞 로스터리 카페. 직접 로스팅한 스페셜티 원두와 유기농 베이커리가 있어요. 가격대는 높은 편이라는 후기가 있어요.",check:["거리","주소"],confirm:true},
+      {id:"c12",area:"고성",name:"스위밍 터틀",q:"고성 스위밍 터틀 아야진",ring:3,a:119,tags:["dawn","day"],why:"아야진해수욕장이 내려다보이는 3층 독채 카페. 옥상 좌석이 있고, 1층은 철조망이 보인다는 후기가 있어 위층이 나아요.",check:["거리","주소"],confirm:true},
       {id:"c13",area:"속초",name:"긷",q:"속초 긷 카페",ring:2,a:175,tags:["day"],why:"원암학사평길에 2022년에 생긴 대형 카페. 약 1,200평 규모에 학을 닮은 곡선형 건물이라 건축·인테리어에 관심 있다면 둘러볼 만해요.",check:["거리","주소(노학동 원암학사평길 60)"]}
     ],
     move:[
@@ -965,6 +962,7 @@
       ariaTimes:"시간대 선택", ariaMap:"호텔 기준 거리 개념도", ariaCats:"카테고리", ariaAreas:"지역 선택",
       now:"지금",
       notice:"영업시간과 휴무일은 싣지 않았어요. 가기 전에 지도 링크에서 전화번호를 확인해 직접 문의해 주세요.",
+      confirm:"출발 전에 지도 링크에서 전화번호를 확인해 문의하고, 문을 여는 날인지와 이동 시간을 확인해 주세요.",
       cats:{spot:"가볼 곳",food:"맛집",cafe:"카페",move:"이동·장보기"},
       areas:{all:"전체","속초":"속초","양양":"양양","고성":"고성"},
       times:{dawn:["새벽","해 뜰 무렵"],day:["낮","낮 시간"],dusk:["일몰","해 질 무렵"],night:["밤","밤 시간"]},
@@ -995,6 +993,7 @@
       ariaTimes:"Time of day", ariaMap:"Distance sketch from the hotel", ariaCats:"Category", ariaAreas:"Area",
       now:"Now",
       notice:"We do not list opening hours or closing days. Before you go, find the phone number through the map links and call to check.",
+      confirm:"Before you set out, find the phone number through the map links and call to confirm it is open that day, and check the travel time.",
       cats:{spot:"Sights",food:"Food",cafe:"Cafes",move:"Getting around"},
       areas:{all:"All","속초":"Sokcho","양양":"Yangyang","고성":"Goseong"},
       times:{dawn:["Dawn","around sunrise"],day:["Day","during the day"],dusk:["Dusk","around sunset"],night:["Night","at night"]},
@@ -1028,6 +1027,7 @@
     ariaTimes:"选择时段", ariaMap:"以酒店为基准的距离示意图", ariaCats:"分类", ariaAreas:"选择地区",
     now:"现在",
     notice:"本页不列出营业时间和休息日。出发前请通过地图链接查找电话号码，直接致电确认。",
+    confirm:"出发前，请通过地图链接查找电话号码致电确认当天是否营业，并核实所需时间。",
     cats:{spot:"景点",food:"美食",cafe:"咖啡馆",move:"交通·购物"},
     areas:{all:"全部","속초":"束草","양양":"襄阳","고성":"高城"},
     times:{dawn:["清晨","日出前后"],day:["白天","白天"],dusk:["日落","日落前后"],night:["夜晚","夜间"]},
@@ -1058,6 +1058,7 @@
     ariaTimes:"時間帯を選ぶ", ariaMap:"ホテルからの距離イメージ図", ariaCats:"カテゴリ", ariaAreas:"エリアを選ぶ",
     now:"今",
     notice:"営業時間と定休日は掲載していません。お出かけ前に、地図リンクで電話番号を確認し、直接お問い合わせください。",
+    confirm:"お出かけ前に、地図リンクで電話番号を確認し、当日営業しているかと所要時間をお問い合わせ・ご確認ください。",
     cats:{spot:"見どころ",food:"グルメ",cafe:"カフェ",move:"移動・買い物"},
     areas:{all:"すべて","속초":"束草","양양":"襄陽","고성":"高城"},
     times:{dawn:["早朝","日の出のころ"],day:["昼","昼の時間帯"],dusk:["夕暮れ","日没のころ"],night:["夜","夜の時間帯"]},
@@ -1079,8 +1080,6 @@
   var CX = 170, CY = 210;
 
   var params = new URLSearchParams(location.search);
-  var REVIEW = params.get("review") === "1";
-  if (REVIEW) document.getElementById("app").classList.add("review");
 
   function initialLang(){
     var q = params.get("lang");
@@ -1286,8 +1285,8 @@
         links.appendChild(el("a", {href:mapHref(lk[0], p.q), target:"_blank", rel:"noopener noreferrer"}, lk[1]));
       });
       body.appendChild(links);
-      if (REVIEW && p.check && p.check.length) {
-        body.appendChild(el("p", {"class":"check", lang:"ko"}, "확인 필요: " + p.check.join(" · ")));
+      if (p.confirm) {
+        body.appendChild(el("p", {"class":"confirm"}, t.confirm));
       }
       li.appendChild(body);
       ol.appendChild(li);
